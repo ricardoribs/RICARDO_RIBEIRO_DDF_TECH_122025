@@ -78,3 +78,59 @@ Documentação do planejamento, metodologia adotada e análise completa de risco
 Scripts de aquisição, amostras e dicionários da base de dados Olist (mais de 100 mil registros).
 
 3. Demais diretórios serão adicionados progressivamente conforme o avanço do projeto e das entregas.
+
+## Diagrama de Arquitetura do Case
+Todo o case foi desenhado com base no Ciclo de Vida dos Dados adotado pela Dadosfera.
+Cada fase do projeto se conecta diretamente a uma ou mais etapas desse ciclo,
+desde a ingestão e processamento dos dados (Bronze),
+passando pela qualidade, governança e enriquecimento (Silver),
+até a modelagem analítica, consumo e Data Apps (Gold),
+com IA Generativa integrada ao longo da cadeia de valor.
+
+```mermaid
+graph TD
+    %% Estilos
+    classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:white;
+    classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:black;
+    classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:black;
+    classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px;
+
+    subgraph Planejamento [Fase 0: Planejamento]
+        I0[Item 0: Planejamento & PMBOK]:::plan
+    end
+
+    subgraph Bronze [Fase 1: Camada Bronze - Ingestão]
+        direction TB
+        I1[Item 1: Coleta Base Olist]:::bronze
+        I2[Item 2.1: Ingestão Dadosfera]:::bronze
+        I1 --> I2
+    end
+
+    subgraph Silver [Fase 2: Camada Silver - Qualidade & Enriquecimento]
+        direction TB
+        I3[Item 3: Catalogação & Governança]:::silver
+        I4[Item 4: Data Quality Checks]:::silver
+        I5[Item 5: Enriquecimento c/ GenAI]:::silver
+        I2 --> I3
+        I3 --> I4
+        I4 --> I5
+    end
+
+    subgraph Gold [Fase 3: Camada Gold - Modelagem & Consumo]
+        direction TB
+        I6[Item 6: Modelagem Star Schema]:::gold
+        I7[Item 7: Dashboard Metabase]:::gold
+        I9[Item 9: Data App Streamlit]:::gold
+        I5 --> I6
+        I6 --> I7
+        I6 --> I9
+    end
+
+    subgraph Final [Fase 4: Automação & Entrega]
+        I8[Item 8: Pipelines Automatizados]
+        I10[Item 10: Apresentação Final]
+        I8 -.-> I6
+        I7 --> I10
+        I9 --> I10
+    end
+```
