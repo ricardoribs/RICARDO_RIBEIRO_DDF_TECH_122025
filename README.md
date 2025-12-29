@@ -27,6 +27,17 @@ Objetivo: Garantir aquisição, rastreabilidade e persistência dos dados em est
 | 01 | Seleção e Aquisição de Dados (>100k rows) | 2h | Em andamento | 00 |
 | 02 | Ingestão na Dadosfera (Carga + Microtransformação) | 3h | Pendente | 01 |
 
+## Fonte de Dados
+
+Utilizei o **Brazilian E-Commerce Public Dataset by Olist** (>100k pedidos).
+A escolha se deve à complexidade do esquema (vendas, logística, pagamentos),
+ideal para demonstrar modelagem dimensional.
+
+- **Principal Fato:** `olist_order_items` (>112k registros)
+- **Principais Dimensões:** Produtos, Clientes, Geolocalização.
+
+👉 [Clique aqui para ver o Dicionário de Dados Completo e Esquema](./01_base_dados/dicionario_dados.md)
+
 
 ## Fase 2 – Silver (Qualidade, Governança e Enriquecimento)
 
