@@ -39,4 +39,8 @@ Detalhes dos compradores.
 * `customer_state` (String): Estado (Sigla).
 
 ---
-*Nota: Este dicionário será expandido conforme novas tabelas forem geradas nas camadas Silver e Gold.*
+## 📚 Catálogo de Dados (Camada Bronze)
+
+| Tabela Técnica | Nome de Negócio | Camada | Descrição |
+|---|---|---|---|
+| `TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS` | Itens de Pedidos | **[BRONZE]** | Dados brutos contendo preço, frete e IDs. Ingestão direta do PostgreSQL. |
