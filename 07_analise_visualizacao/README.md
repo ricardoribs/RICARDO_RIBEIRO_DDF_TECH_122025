@@ -1,177 +1,196 @@
-Item 7 - Análise de Dados e Visualização
-📊 Dashboard no Metabase
-Link do Dashboard: Dashboard Executivo Olist - Ricardo Ribeiro
-Coleção: Ricardo Ribeiro - Olist - Dez 2025
-Ferramenta: Metabase (Dadosfera)
-Período analisado: 2016-2020
+# Item 7 — Análise de Dados e Visualização
 
-🎯 Objetivo da Análise
-Construir um dashboard executivo que permita:
+## Dashboard Executivo Olist — Ricardo Ribeiro
 
-Monitorar KPIs principais de vendas em tempo real
-Analisar evolução temporal da receita
-Identificar principais vendedores (sellers)
-Entender distribuição de preços dos produtos
+**Ferramenta:** Metabase (Dadosfera)
+**Período analisado:** 2016–2020
+**Coleção:** Ricardo Ribeiro – Olist – Dez/2025
 
+**Dashboard Interativo:** LINK_AQUI
 
-📈 Visualizações Implementadas
-1. KPIs Principais (Number Cards)
-Dashboard contém 4 KPIs estratégicos no topo:
-KPIValorDescrição💰 Receita TotalR$ 15.8MSoma de price + freight_value de todos os itens📦 Total de Pedidos98,666Pedidos únicos (order_id distinct)🎯 Ticket MédioR$ 140.64Valor médio por pedido📊 Total de Itens112.7kQuantidade total de itens vendidos
-Query SQL:
-sql-- KPI 1: Receita Total
-SELECT 
-    ROUND(SUM(price + freight_value) / 1000000, 2) AS receita_milhoes
+---
+
+## Objetivo da Análise
+
+Construir um dashboard executivo para apoiar a tomada de decisão, permitindo:
+
+* Monitorar KPIs principais de vendas
+* Analisar a evolução temporal da receita
+* Identificar os principais sellers
+* Entender a distribuição de preços dos produtos
+
+---
+
+## KPIs Principais (Number Cards)
+
+| KPI              |     Valor | Descrição                                          |
+| ---------------- | --------: | -------------------------------------------------- |
+| Receita Total    |  R$ 15,8M | Soma de `price + freight_value` de todos os itens  |
+| Total de Pedidos |    98.666 | Quantidade de pedidos únicos (`order_id` distinto) |
+| Ticket Médio     | R$ 140,64 | Valor médio por pedido                             |
+| Total de Itens   |   112.650 | Quantidade total de itens vendidos                 |
+
+### Queries SQL — KPIs
+
+```sql
+-- KPI 1: Receita Total
+SELECT ROUND(SUM(price + freight_value) / 1000000, 2) AS receita_milhoes
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS;
 
 -- KPI 2: Total de Pedidos
-SELECT 
-    COUNT(DISTINCT order_id) AS total_pedidos
+SELECT COUNT(DISTINCT order_id) AS total_pedidos
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS;
 
 -- KPI 3: Ticket Médio
-SELECT 
-    ROUND(AVG(price + freight_value), 2) AS ticket_medio
+SELECT ROUND(AVG(price + freight_value), 2) AS ticket_medio
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS;
 
 -- KPI 4: Total de Itens
-SELECT 
-    COUNT(*) AS total_itens
+SELECT COUNT(*) AS total_itens
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS;
-Configuração no Metabase:
+```
 
-Tipo: Number (card grande)
-Formatação: Moeda brasileira (R$) onde aplicável
-Posicionamento: Linha superior, 4 colunas iguais
+**Configuração no Metabase:**
 
+* Tipo: Number (cards grandes)
+* Formatação: Moeda brasileira (R$) quando aplicável
+* Posicionamento: Linha superior do dashboard (4 colunas)
 
-2. Gráfico de Evolução Temporal (Area Chart)
-Descrição:
-Análise de série temporal mostrando crescimento de receita e volume de pedidos entre janeiro/2017 e janeiro/2020.
-Insights:
+---
 
-📈 Crescimento consistente de 2017 a 2018
-🚀 Pico em novembro/2018: ~R$ 1.2M em receita mensal
-📉 Queda abrupta em 2019: Possível mudança no negócio ou fim de coleta de dados
-🔄 Sazonalidade visível: Picos regulares sugerem campanhas sazonais (Black Friday, etc)
+## Evolução Temporal — Receita e Pedidos
 
-Query SQL:
-sqlSELECT 
-    DATE_TRUNC('month', CAST(shipping_limit_date AS DATE)) AS mes,
-    SUM(price) AS receita,
-    COUNT(DISTINCT order_id) AS pedidos
+**Tipo:** Area Chart
+**Período:** Jan/2017 – Jan/2020
+
+### Principais Insights
+
+* Crescimento consistente entre 2017 e 2018
+* Pico de receita em novembro de 2018 (~R$ 1,2M)
+* Queda relevante ao longo de 2019
+* Sazonalidade recorrente ao longo do período
+
+### Query SQL
+
+```sql
+SELECT
+  DATE_TRUNC('month', CAST(shipping_limit_date AS DATE)) AS mes,
+  SUM(price) AS receita,
+  COUNT(DISTINCT order_id) AS pedidos
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS
 WHERE shipping_limit_date IS NOT NULL
 GROUP BY 1
 ORDER BY 1;
-Configuração:
+```
 
-Tipo: Area Chart (gráfico de área com preenchimento)
-Eixo X: mes (agrupamento mensal)
-Eixo Y: receita (verde) + pedidos (azul)
-Suavização: Ativada
+**Configuração:**
 
+* Eixo X: Mês (agrupamento mensal)
+* Eixo Y: Receita e pedidos
+* Suavização: Ativada
 
-3. Ranking de Vendedores (Horizontal Bar Chart)
-Descrição:
-Top 10 sellers (vendedores) com maior volume de pedidos e receita gerada.
-Insights:
+---
 
-🏆 Concentração de vendas: Top 3 sellers representam parcela significativa
-💡 Oportunidade: Expandir base de sellers ativos
-📊 Correlação preço x volume: Sellers com mais pedidos nem sempre têm maior receita
+## Ranking de Sellers — Top 10
 
-Query SQL:
-sqlSELECT 
-    seller_id AS vendedor,
-    COUNT(DISTINCT order_id) AS pedidos,
-    ROUND(SUM(price) / 1000, 1) AS receita_k
+**Tipo:** Horizontal Bar Chart
+
+### Principais Insights
+
+* Alta concentração de vendas nos principais sellers
+* Sellers com maior volume não necessariamente geram maior receita
+* Oportunidade de expansão da base de vendedores
+
+### Query SQL
+
+```sql
+SELECT
+  seller_id AS vendedor,
+  COUNT(DISTINCT order_id) AS pedidos,
+  ROUND(SUM(price) / 1000, 1) AS receita_k
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS
 GROUP BY 1
 ORDER BY pedidos DESC
 LIMIT 10;
-Configuração:
+```
 
-Tipo: Bar Chart (barras horizontais)
-Eixo Y: vendedor (ID do seller)
-Eixo X: pedidos (azul) + receita_k (laranja)
-Ordenação: Decrescente por volume de pedidos
+**Configuração:**
 
+* Eixo Y: Seller
+* Eixo X: Pedidos e receita
+* Ordenação: Decrescente por volume de pedidos
 
-4. Distribuição por Faixa de Preço (Donut Chart)
-Descrição:
-Segmentação dos 112.650 itens por faixa de preço unitário.
-Insights:
+---
 
-🎯 34.6% até R$ 50: Produtos de entrada/baixo custo dominam
-💰 29.4% entre R$ 50-100: Faixa intermediária relevante
-📈 24.0% entre R$ 100-200: Mercado médio-alto expressivo
-💎 12.0% acima de R$ 200: Nicho premium menor mas importante
+## Distribuição por Faixa de Preço
 
-Implicações estratégicas:
+**Tipo:** Donut Chart
 
-Marketplace democrático (atende todas as faixas)
-Oportunidade de upsell da faixa mais baixa
-Mix saudável de produtos
+### Principais Insights
 
-Query SQL:
-sqlSELECT 
-    CASE 
-        WHEN price < 50 THEN 'Até R$ 50'
-        WHEN price < 100 THEN 'R$ 50-100'
-        WHEN price < 200 THEN 'R$ 100-200'
-        ELSE 'Acima R$ 200'
-    END AS faixa_preco,
-    COUNT(*) AS quantidade
+* Predominância de produtos até R$ 100
+* Mix equilibrado entre faixas intermediárias
+* Presença relevante de produtos premium
+
+### Query SQL
+
+```sql
+SELECT
+  CASE
+    WHEN price < 50 THEN 'Até R$ 50'
+    WHEN price < 100 THEN 'R$ 50–100'
+    WHEN price < 200 THEN 'R$ 100–200'
+    ELSE 'Acima R$ 200'
+  END AS faixa_preco,
+  COUNT(*) AS quantidade
 FROM TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS
 GROUP BY 1
 ORDER BY 1;
-Configuração:
+```
 
-Tipo: Donut Chart (gráfico de rosca)
-Segmentos: faixa_preco
-Valor: quantidade
-Percentuais: Visíveis
-Total no centro: 112,650
+**Configuração:**
 
+* Segmentos: Faixa de preço
+* Valor: Quantidade de itens
+* Percentuais visíveis
+* Total central: 112.650 itens
 
-📊 Tipos de Visualização Utilizados
-✅ 5 tipos distintos de visualização:
+---
 
-Number - KPIs principais (4 cards)
-Area Chart - Evolução temporal
-Horizontal Bar Chart - Ranking de sellers
-Donut Chart - Distribuição de preços
-(Potencial para adicionar) - Map, Heatmap ou Scatter
+## Tipos de Visualização Utilizados
 
-✅ Requisito do case ATENDIDO (mínimo 5 tipos diferentes)
+* Number (KPIs)
+* Area Chart (série temporal)
+* Horizontal Bar Chart (ranking)
+* Donut Chart (distribuição)
+* Potencial de expansão: Map, Heatmap ou Scatter
 
-🎨 Design e Layout
-Princípios Aplicados:
+**Requisito do case atendido:** mínimo de cinco tipos distintos
 
-Hierarquia Visual: KPIs no topo → Gráficos principais → Secundários
-Grid Responsivo: 12 colunas para alinhamento perfeito
-Paleta Consistente:
+---
 
-Verde: Receita/valores monetários positivos
-Azul: Volume/contagens
-Cores suaves e profissionais
+## Design e Layout
 
+* Hierarquia visual: KPIs no topo, gráficos principais ao centro e análises complementares abaixo
+* Grid responsivo em 12 colunas
+* Paleta de cores consistente para valores monetários e volumes
+* Espaçamento uniforme entre componentes
 
-Espaçamento: Padding uniforme entre cards
+Layout lógico:
 
-Estrutura:
-┌─────────────────────────────────────────────────┐
-│  [KPI 1]  [KPI 2]  [KPI 3]  [KPI 4]            │
-│                                                  │
-│  [Evolução Temporal - Grande]  [Top Sellers]    │
-│                                                  │
-│  [Distribuição Preço]                           │
-└─────────────────────────────────────────────────┘
+```
+[KPI 1] [KPI 2] [KPI 3] [KPI 4]
+[Evolução Temporal] [Top Sellers]
+[Distribuição de Preços]
+```
 
-📁 Arquivos do Projeto
+---
+
+## Estrutura de Arquivos
+
+```
 07_analise_visualizacao/
-├── README.md                          # Este arquivo
+├── README.md
 ├── queries_sql/
 │   ├── kpi_receita_total.sql
 │   ├── kpi_total_pedidos.sql
@@ -187,56 +206,56 @@ Estrutura:
 │   ├── top_sellers.png
 │   └── distribuicao_preco.png
 └── LINK_DASHBOARD_METABASE.txt
+```
 
-🔗 Links Importantes
+---
 
-Dashboard Interativo: Clique aqui
-Tabela na Dadosfera: TB__E8M6XA__PUBLIC__OLIST_ORDER_ITEMS
-Coleção Metabase: Ricardo Ribeiro - Olist - Dez 2025
+## Insights de Negócio
 
+**Performance Geral**
 
-💡 Insights de Negócio
-1. Performance Geral
+* Receita total de R$ 15,8M indica marketplace robusto
+* Ticket médio equilibrado
+* Alto volume de transações
 
-Receita total de R$ 15.8M demonstra marketplace robusto
-Ticket médio de R$ 140.64 indica mix equilibrado de produtos
-98k+ pedidos mostram volume significativo de transações
+**Comportamento Temporal**
 
-2. Comportamento Temporal
+* Crescimento acelerado entre 2017 e 2018
+* Sazonalidade bem definida
+* Queda em 2019 demanda investigação adicional
 
-Crescimento acelerado em 2017-2018
-Sazonalidade clara (picos mensais)
-Queda em 2019 sugere necessidade de investigação
+**Vendedores**
 
-3. Concentração de Vendedores
+* Alta concentração nos principais sellers
+* Oportunidade de diversificação da base
 
-Marketplace relativamente concentrado (top 10 dominam)
-Oportunidade de diversificar base de sellers
-Potencial para programa de incentivo a novos vendedores
+**Estratégia de Pricing**
 
-4. Estratégia de Pricing
+* Predominância de produtos de menor valor
+* Mix saudável de preços
+* Potencial de crescimento no segmento premium
 
-64% dos produtos abaixo de R$ 100 (acessibilidade)
-Presença em todas as faixas de preço (democratização)
-Oportunidade de aumentar participação premium (12%)
+---
 
+## Próximos Passos
 
-🚀 Próximos Passos Sugeridos
+* Inclusão de filtros dinâmicos por período
+* Drill-down por categoria de produto
+* Comparativos Year over Year (YoY)
+* Alertas para KPIs fora do esperado
+* Análise geográfica, quando disponível
 
-Adicionar filtros de data para análise de períodos específicos
-Criar drill-downs por categoria de produto
-Implementar alertas para KPIs fora do esperado
-Adicionar comparativos YoY (Year over Year)
-Incluir análise geográfica (se dados de localização disponíveis)
+---
 
+## Conclusão
 
-📊 Conclusão
-O dashboard desenvolvido atende plenamente aos requisitos do Item 7 do case técnico Dadosfera:
-✅ Mínimo 5 tipos de visualização diferentes
-✅ Análise de categorias (sellers/faixas de preço)
-✅ Análise de série temporal (evolução 2016-2020)
-✅ Queries SQL documentadas e salvas
-✅ Dashboard publicado e acessível via link
-✅ Layout profissional e organizado
-✅ Insights de negócio documentados
-Status: ✅ COMPLETO
+O dashboard desenvolvido atende integralmente aos requisitos do Item 7 do case técnico Dadosfera:
+
+* Múltiplos tipos de visualização
+* Análise temporal e categórica
+* Queries SQL documentadas
+* Dashboard publicado e acessível
+* Layout profissional
+* Insights de negócio claros
+
+**Status:** COMPLETO
