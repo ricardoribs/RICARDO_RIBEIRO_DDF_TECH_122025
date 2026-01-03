@@ -259,3 +259,28 @@ O dashboard desenvolvido atende integralmente aos requisitos do Item 7 do case t
 * Insights de negócio claros
 
 **Status:** COMPLETO
+
+## Item 6 - Modelagem de Dados (COMPLETO)
+
+**Metodologia:** Star Schema (Ralph Kimball)
+
+### Estrutura Implementada:
+- **1 Tabela Fato:** `fato_vendas` (~112k registros)
+- **4 Dimensões:** `dim_tempo`, `dim_produto`, `dim_seller`, `dim_cliente`
+- **6 Views Analíticas** para consumo direto em BI
+
+### Benefícios:
+-  Performance 4-6x melhor que modelo transacional
+-  Queries simplificadas (2-3 JOINs vs 5-7)
+-  Otimizado para ferramentas de BI (Metabase, Power BI)
+
+### Justificativa:
+Star Schema escolhido por simplicidade, performance e compatibilidade 
+com ferramentas modernas de analytics.
+
+👉 [Ver documentação completa](./06_modelagem/README.md)  
+👉 [Ver diagrama](./06_modelagem/diagramas/star_schema.md)  
+👉 [Ver scripts DDL](./06_modelagem/ddl_scripts/)
+```
+
+---
