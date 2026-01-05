@@ -77,47 +77,53 @@ Este projeto adota uma abordagem híbrida (Modern Data Stack), combinando planej
 
 ## 🏗️ Diagrama de Arquitetura
 
-O fluxo de dados segue uma arquitetura Lakehouse, com ingestão transacional via PostgreSQL (Neon) na plataforma Dadosfera, processamento e modelagem analítica, consumo em Snowflake e visualização no Metabase.
+O fluxo de dados segue uma arquitetura **Lakehouse**, com ingestão transacional via **PostgreSQL (Neon)** na plataforma **Dadosfera**, camada analítica em **Snowflake** e visualização via **Metabase**.
 
 ```mermaid
 graph TD
+
+    %% Camadas
+    classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px;
     classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:white;
     classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:black;
     classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:black;
-    classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px;
 
-    subgraph Planejamento [Fase 0 – Planejamento]
-        I0[Item 0: Planejamento & Kanban]:::plan
+    subgraph Planejamento["Fase 0 - Planejamento"]
+        P0["Item 0: Planejamento & PMBOK"]:::plan
     end
 
-    subgraph Bronze [Fase 1 – Bronze | Ingestão]
-        I1[Item 1: Base Olist]:::bronze
-        I2[Item 2: PostgreSQL (Neon) – Dadosfera]:::bronze
-        I1 --> I2
+    subgraph Bronze["Fase 1 - Ingestão (Bronze)"]
+        B1["Fonte Olist (CSV)"]:::bronze
+        B2["PostgreSQL Neon (Dadosfera)"]:::bronze
+        B1 --> B2
     end
 
-    subgraph Silver [Fase 2 – Silver | Qualidade & Enriquecimento]
-        I3[Item 3: Catalogação]:::silver
-        I4[Item 4: Data Quality]:::silver
-        I5[Item 5: GenAI / NLP]:::silver
-        I2 --> I3 --> I4 --> I5
+    subgraph Silver["Fase 2 - Qualidade & Enriquecimento (Silver)"]
+        S1["Catalogação & Dicionário"]:::silver
+        S2["Data Quality (Great Expectations)"]:::silver
+        S3["GenAI / NLP (Gemini)"]:::silver
+        B2 --> S1
+        S1 --> S2
+        S2 --> S3
     end
 
-    subgraph Gold [Fase 3 – Gold | Modelagem & Consumo]
-        I6[Item 6: Star Schema]:::gold
-        I7[Item 7: BI – Metabase / Snowflake]:::gold
-        I9[Item 9: Data App – Streamlit]:::gold
-        I5 --> I6
-        I6 --> I7
-        I6 --> I9
+    subgraph Gold["Fase 3 - Modelagem & Consumo (Gold)"]
+        G1["Star Schema (Kimball)"]:::gold
+        G2["Snowflake (Analytics)"]:::gold
+        G3["Metabase (Dashboard)"]:::gold
+        G4["Streamlit Data App"]:::gold
+        S3 --> G1
+        G1 --> G2
+        G2 --> G3
+        G1 --> G4
     end
 
-    subgraph Automacao [Fase 4 – Automação & Entrega]
-        I8[Item 8: Pipelines Prefect]
-        I10[Item 10: Apresentação Final]
-        I8 -.-> I6
-        I7 --> I10
-        I9 --> I10
+    subgraph Automacao["Fase 4 - Automação & Entrega"]
+        A1["Pipelines (Prefect / Dadosfera)"]
+        A2["Apresentação Final"]
+        A1 -.-> G1
+        G3 --> A2
+        G4 --> A2
     end
 ```
 
