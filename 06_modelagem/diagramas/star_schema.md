@@ -7,6 +7,7 @@ erDiagram
     FATO_VENDAS ||--o{ DIM_PRODUTO : "sk_produto"
     FATO_VENDAS ||--o{ DIM_SELLER : "sk_seller"
     FATO_VENDAS ||--o{ DIM_CLIENTE : "sk_cliente"
+    ```
     
     FATO_VENDAS {
         int sk_tempo FK
