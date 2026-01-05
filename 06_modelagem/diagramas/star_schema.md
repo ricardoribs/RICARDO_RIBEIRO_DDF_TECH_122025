@@ -1,14 +1,11 @@
-# Diagrama Star Schema - Olist E-commerce
-
-## Modelo Estrela (Star Schema)
 ```mermaid
 erDiagram
-    FATO_VENDAS ||--o{ DIM_TEMPO : "sk_tempo"
-    FATO_VENDAS ||--o{ DIM_PRODUTO : "sk_produto"
-    FATO_VENDAS ||--o{ DIM_SELLER : "sk_seller"
-    FATO_VENDAS ||--o{ DIM_CLIENTE : "sk_cliente"
-    ```
-    
+
+    FATO_VENDAS ||--o{ DIM_TEMPO : sk_tempo
+    FATO_VENDAS ||--o{ DIM_PRODUTO : sk_produto
+    FATO_VENDAS ||--o{ DIM_SELLER : sk_seller
+    FATO_VENDAS ||--o{ DIM_CLIENTE : sk_cliente
+
     FATO_VENDAS {
         int sk_tempo FK
         int sk_produto FK
@@ -21,7 +18,7 @@ erDiagram
         decimal valor_total
         int quantidade
     }
-    
+
     DIM_TEMPO {
         int sk_tempo PK
         date data_completa
@@ -32,7 +29,7 @@ erDiagram
         int dia_semana
         boolean eh_fim_semana
     }
-    
+
     DIM_PRODUTO {
         int sk_produto PK
         string product_id
@@ -41,7 +38,7 @@ erDiagram
         int volume_cm3
         boolean produto_ativo
     }
-    
+
     DIM_SELLER {
         int sk_seller PK
         string seller_id
@@ -49,7 +46,7 @@ erDiagram
         string estado
         string regiao
     }
-    
+
     DIM_CLIENTE {
         int sk_cliente PK
         string customer_id
@@ -60,4 +57,3 @@ erDiagram
         boolean registro_atual
     }
 ```
-\```
