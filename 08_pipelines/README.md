@@ -6,13 +6,20 @@ Este módulo contém a orquestração do pipeline de processamento de dados, sim
 
 O pipeline foi desenvolvido em Python seguindo o padrão ETL (Extract, Transform, Load) com checkpoints de qualidade.
 
-```mermaid
 graph LR
-    A[Ingestão (Bronze)] -->|Raw CSV| B(Validação Data Quality)
-    B -->|Dados Validados| C{Transformação}
-    C -->|Agregação SQL/Pandas| D[Camada Gold]
-    D -->|Dataset Otimizado| E[Dashboard/Analytics]
-    ```
+```
+    A[Ingestao Bronze - CSV Olist] --> B[PostgreSQL Neon - Dadosfera]
+
+    B --> C[Validacao Data Quality]
+    C -->|OK| D[Transformacoes SQL]
+    C -->|Falha| E[Alerta / Log de Erro]
+
+    D --> F[Star Schema - Camada Gold]
+    F --> G[Snowflake - Analytics]
+
+    G --> H[Metabase Dashboard]
+    G --> I[Streamlit Data App]
+```
 ---
 ## Etapas do Processo
 1. Ingestão: Leitura do Data Lake (CSV local olist_order_items).
