@@ -278,9 +278,9 @@ O dashboard desenvolvido atende integralmente aos requisitos do Item 7 do case t
 Star Schema escolhido por simplicidade, performance e compatibilidade 
 com ferramentas modernas de analytics.
 
-👉 [Ver documentação completa](./06_modelagem/README.md)  
-👉 [Ver diagrama](./06_modelagem/diagramas/star_schema.md)  
-👉 [Ver scripts DDL](./06_modelagem/ddl_scripts/)
-```
+👉 [Ver documentação completa](docs/README.md)  
+👉 [Ver diagrama](docs/diagrama_star_schema.md)  
+👉 [Ver scripts DDL](sql/ddl/)
+
 
 ---
