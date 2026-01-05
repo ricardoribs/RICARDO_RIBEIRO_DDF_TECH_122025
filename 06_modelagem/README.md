@@ -56,14 +56,12 @@ Neste contexto:
 
 ### Diagrama Conceitual
 
-```
-                    DIM_TEMPO
-                        |
-        ---------------------------------
-        |               |               |
-    DIM_PRODUTO      FATO_VENDAS     DIM_SELLER
-                        |
-                    DIM_CLIENTE
+```mermaid
+erDiagram
+    DIM_TEMPO ||--o{ FATO_VENDAS : tempo
+    DIM_PRODUTO ||--o{ FATO_VENDAS : produto
+    DIM_SELLER ||--o{ FATO_VENDAS : seller
+    DIM_CLIENTE ||--o{ FATO_VENDAS : cliente
 ```
 
 ---
