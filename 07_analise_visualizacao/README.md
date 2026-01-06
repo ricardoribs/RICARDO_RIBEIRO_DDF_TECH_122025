@@ -6,7 +6,7 @@
 **Período analisado:** 2016–2020
 **Coleção:** Ricardo Ribeiro – Olist – Dez/2025
 
-**Dashboard Interativo:** LINK_AQUI
+**Dashboard Interativo:** [text](https://metabase-treinamentos.dadosfera.ai/dashboard/227-dashboard-executivo-olist-ricardo-ribeiro?agrupamento_de_tempo=)
 
 ---
 
