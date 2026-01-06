@@ -89,6 +89,7 @@ pytest tests/ -v
 
 ---
 
+
 ## 🏗️ Diagrama de Arquitetura
 
 O fluxo de dados segue uma arquitetura **Lakehouse**, com ingestão transacional via **PostgreSQL (Neon)** na plataforma **Dadosfera**, camada analítica em **Snowflake** e visualização via **Metabase**.
@@ -140,6 +141,7 @@ graph TD
         G4 --> A2
     end
 ```
+
 
 **Observação:**
 A ingestão ocorre via PostgreSQL (Neon) na plataforma Dadosfera. A camada Gold é consumida no Snowflake, que atua como engine analítica para construção dos dashboards no Metabase.
