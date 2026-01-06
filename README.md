@@ -86,6 +86,7 @@ Para garantir a confiabilidade do código, foram implementados testes unitários
 ```bash
 pip install pytest
 pytest tests/ -v
+
 ---
 
 ## 🏗️ Diagrama de Arquitetura
