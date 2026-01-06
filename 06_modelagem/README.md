@@ -66,6 +66,21 @@ erDiagram
 
 ---
 
+## Diferencial: Automação SCD Type 2 (Historicidade)
+Implementação avançada de Slowly Changing Dimensions (SCD) para a tabela DIM_CLIENTE utilizando recursos nativos do banco de dados (PL/pgSQL).
+
+* Mecanismo: Triggers (BEFORE UPDATE) e Stored Procedures.
+
+* Comportamento: Ao detectar mudança de cidade/estado do cliente, o sistema automaticamente:
+
+* Expira o registro atual (define data_fim e atual = false).
+
+* Insere um novo registro com os dados novos.
+
+* Benefício: Permite Time Travel (analisar vendas baseadas na localização do cliente no momento da compra, não na localização atual).
+
+
+
 ## Modelagem Detalhada
 
 ### FATO_VENDAS
