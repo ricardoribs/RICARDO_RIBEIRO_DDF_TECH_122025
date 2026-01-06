@@ -16,7 +16,7 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 ## Apresentação do Case (Item 10)
 
-* Link para apresentação executiva (5–7 minutos)
+* [Link para apresentação executiva (YouTube)](INSIRA_SEU_LINK_AQUI)
 
 ---
 
@@ -88,7 +88,6 @@ O projeto conta com uma suíte robusta de testes utilizando **pytest**:
 
 ```bash
 pytest tests/ -v
-```
 
 ---
 
