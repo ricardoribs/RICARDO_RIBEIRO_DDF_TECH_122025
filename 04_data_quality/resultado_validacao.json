@@ -1,0 +1,259 @@
+{
+  "success": true,
+  "results": [
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "kwargs": {
+          "column": "order_id",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_match_regex",
+        "kwargs": {
+          "column": "order_id",
+          "regex": "^[a-f0-9]{32}$",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "missing_count": 0,
+        "missing_percent": 0.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "unexpected_percent_nonmissing": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "kwargs": {
+          "column": "product_id",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "kwargs": {
+          "column": "seller_id",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_between",
+        "kwargs": {
+          "column": "price",
+          "min_value": 0.01,
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "missing_count": 0,
+        "missing_percent": 0.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "unexpected_percent_nonmissing": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_mean_to_be_between",
+        "kwargs": {
+          "column": "price",
+          "min_value": 50,
+          "max_value": 250,
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "observed_value": 120.65373901464713,
+        "element_count": 112650,
+        "missing_count": null,
+        "missing_percent": null
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_between",
+        "kwargs": {
+          "column": "freight_value",
+          "min_value": 0.0,
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "missing_count": 0,
+        "missing_percent": 0.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "unexpected_percent_nonmissing": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_of_type",
+        "kwargs": {
+          "column": "order_item_id",
+          "type_": "int64",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "observed_value": "int64"
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_match_strftime_format",
+        "kwargs": {
+          "column": "shipping_limit_date",
+          "strftime_format": "%Y-%m-%d %H:%M:%S",
+          "result_format": "BASIC"
+        },
+        "meta": {}
+      },
+      "result": {
+        "element_count": 112650,
+        "missing_count": 0,
+        "missing_percent": 0.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "unexpected_percent_total": 0.0,
+        "unexpected_percent_nonmissing": 0.0,
+        "partial_unexpected_list": []
+      },
+      "meta": {},
+      "exception_info": {
+        "raised_exception": false,
+        "exception_message": null,
+        "exception_traceback": null
+      }
+    }
+  ],
+  "evaluation_parameters": {},
+  "statistics": {
+    "evaluated_expectations": 9,
+    "successful_expectations": 9,
+    "unsuccessful_expectations": 0,
+    "success_percent": 100.0
+  },
+  "meta": {
+    "great_expectations_version": "0.15.50",
+    "expectation_suite_name": "default",
+    "run_id": {
+      "run_name": null,
+      "run_time": "2026-01-06T13:49:16.625019+00:00"
+    },
+    "batch_kwargs": {
+      "ge_batch_id": "7c9d6be5-eb06-11f0-9793-9829a6e31823"
+    },
+    "batch_markers": {},
+    "batch_parameters": {},
+    "validation_time": "20260106T134916.625019Z",
+    "expectation_suite_meta": {
+      "great_expectations_version": "0.15.50"
+    }
+  }
+}

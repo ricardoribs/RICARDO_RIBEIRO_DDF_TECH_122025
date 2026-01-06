@@ -1,97 +1,49 @@
-import great_expectations as gx
-import pandas as pd
 import os
-import webbrowser  # <--- Importante para abrir o navegador
-from great_expectations.expectations import (
-    ExpectColumnValuesToNotBeNull,
-    ExpectColumnValuesToBeBetween
-)
+import json
+import pandas as pd
+from great_expectations.dataset import PandasDataset
 
-print("🚀 Iniciando Validação de Qualidade (Versão com Relatório)...")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, '..', '01_base_dados', 'olist_order_items_dataset.csv')
+REPORT_FILE = os.path.join(BASE_DIR, 'resultado_validacao.json')
 
-# 1. Configurar contexto
-context = gx.get_context()
 
-# 2. Carregar dados
-caminho_csv = "../01_base_dados/olist_order_items_dataset.csv"
+def run_data_quality():
+    print("🚀 Iniciando Validação de Qualidade de Dados (GX Estável)")
 
-# Resolve caminho absoluto para evitar erros
-caminho_abs = os.path.abspath(caminho_csv)
-if not os.path.exists(caminho_abs):
-    print(f"❌ Erro: Arquivo não encontrado em {caminho_abs}")
-    exit()
+    df = pd.read_csv(DATA_PATH)
+    print(f"📊 Dataset carregado com {len(df)} registros")
 
-print(f"📂 Lendo arquivo: {caminho_abs}...")
-df = pd.read_csv(caminho_abs)
+    validator = PandasDataset(df)
 
-# 3. Criar Fonte de Dados
-data_source = context.data_sources.add_pandas("meus_dados_olist")
-data_asset = data_source.add_dataframe_asset(name="itens_pedidos")
-batch_definition = data_asset.add_batch_definition_whole_dataframe("batch_def_olist")
+    validator.expect_column_values_to_not_be_null("order_id")
+    validator.expect_column_values_to_not_be_null("product_id")
+    validator.expect_column_values_to_not_be_null("seller_id")
 
-# 4. Criar Suite de Testes
-suite_name = "suite_qualidade_bronze"
-try:
-    context.suites.delete(suite_name)
-except:
-    pass
-
-suite = context.suites.add(gx.ExpectationSuite(name=suite_name))
-
-print("🧪 Definindo regras...")
-# Regras
-suite.add_expectation(ExpectColumnValuesToNotBeNull(column="order_id"))
-suite.add_expectation(ExpectColumnValuesToNotBeNull(column="product_id"))
-suite.add_expectation(ExpectColumnValuesToBeBetween(column="price", min_value=0.01))
-suite.add_expectation(ExpectColumnValuesToBeBetween(column="freight_value", min_value=0))
-
-# 5. Validação
-validation_definition = context.validation_definitions.add(
-    gx.ValidationDefinition(
-        name="validacao_def",
-        data=batch_definition,
-        suite=suite
+    validator.expect_column_values_to_match_regex(
+        "order_id", r"^[a-f0-9]{32}$"
     )
-)
 
-# 6. Checkpoint + Action de Update Data Docs (Importante!)
-checkpoint = context.checkpoints.add(
-    gx.Checkpoint(
-        name="checkpoint_validacao",
-        validation_definitions=[validation_definition],
-        actions=[
-            gx.checkpoint.actions.UpdateDataDocsAction(name="update_data_docs")
-        ]
+    validator.expect_column_values_to_be_between("price", min_value=0.01)
+    validator.expect_column_values_to_be_between("freight_value", min_value=0.0)
+    validator.expect_column_values_to_be_of_type("order_item_id", "int64")
+
+    validator.expect_column_values_to_match_strftime_format(
+        "shipping_limit_date", "%Y-%m-%d %H:%M:%S"
     )
-)
 
-print("🏃 Rodando verificação...")
-result = checkpoint.run(batch_parameters={"dataframe": df})
+    validator.expect_column_mean_to_be_between(
+        "price", min_value=50, max_value=250
+    )
 
-print(f"✅ Resultado: {result.success}")
+    results = validator.validate()
 
-# --- PARTE NOVA: FORÇAR ABERTURA DO RELATÓRIO ---
-print("📄 Tentando abrir relatório...")
+    with open(REPORT_FILE, "w") as f:
+        json.dump(results.to_json_dict(), f, indent=2)
 
-# Tenta o método nativo primeiro
-try:
-    urls = context.open_data_docs()
-except:
-    pass
+    print("✅ Validação finalizada com sucesso")
+    print(f"📄 Evidência salva em: {REPORT_FILE}")
 
-# Se não abriu, vamos caçar o arquivo HTML manualmente
-# O GX cria uma pasta 'gx' onde o script roda
-caminho_relatorio = os.path.join(os.getcwd(), "gx", "uncommitted", "data_docs", "local_site", "index.html")
 
-if os.path.exists(caminho_relatorio):
-    print(f"🔗 Abrindo: {caminho_relatorio}")
-    webbrowser.open(f"file:///{caminho_relatorio}")
-else:
-    print("⚠️ Não achei o index.html padrão. Procurando nas subpastas...")
-    # Tenta achar qualquer index.html dentro da pasta gx
-    for root, dirs, files in os.walk(os.path.join(os.getcwd(), "gx")):
-        if "index.html" in files:
-            full_path = os.path.join(root, "index.html")
-            print(f"🔗 Encontrado e abrindo: {full_path}")
-            webbrowser.open(f"file:///{full_path}")
-            break
+if __name__ == "__main__":
+    run_data_quality()
