@@ -88,7 +88,7 @@ pip install pytest
 pytest tests/ -v
 
 ---
-
+---
 
 ## 🏗️ Diagrama de Arquitetura
 
@@ -142,7 +142,7 @@ graph TD
     end
 ```
 
-
+---
 **Observação:**
 A ingestão ocorre via PostgreSQL (Neon) na plataforma Dadosfera. A camada Gold é consumida no Snowflake, que atua como engine analítica para construção dos dashboards no Metabase.
 
