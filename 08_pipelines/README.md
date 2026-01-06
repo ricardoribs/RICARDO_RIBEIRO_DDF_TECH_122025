@@ -32,25 +32,6 @@ graph LR
 
 4. Carga (Load): Persistência dos dados processados na pasta saida_gold.
 
-## Como Executar
-
-Execute o pipeline ETL localmente com o comando abaixo:
-
-```bash
-python etl_pipeline.py
-
-
-## Logs de Execução
-O pipeline gera um arquivo de log (pipeline_log.txt) para auditoria de cada execução.
-Exemplo de Log:
-[2025-01-05 10:00:01] === INICIO DO PIPELINE DE DADOS ===
-[2025-01-05 10:00:01] Iniciando Step 1: Ingestao de Dados
-[2025-01-05 10:00:02] Ingestao concluida. Linhas carregadas: 112650
-[2025-01-05 10:00:02] Iniciando Step 2: Validacao de Qualidade
-[2025-01-05 10:00:02] Validacao concluida com sucesso
-[2025-01-05 10:00:02] Iniciando Step 3: Transformacao e Modelagem
-[2025-01-05 10:00:03] Iniciando Step 4: Carga (Save)
-[2025-01-05 10:00:03] PIPELINE FINALIZADO COM SUCESSO
 ---
 ## Diferencial: Observabilidade Avançada
 
@@ -80,3 +61,26 @@ Implementação de um **Logger Estruturado** (`pipeline_avancado_observabilidade
   }
 }
 ---
+
+## Como Executar
+
+Execute o pipeline ETL localmente com o comando abaixo:
+
+```bash
+python etl_pipeline.py
+
+---
+
+## Logs de Execução
+O pipeline gera um arquivo de log (pipeline_log.txt) para auditoria de cada execução.
+Exemplo de Log:
+[2025-01-05 10:00:01] === INICIO DO PIPELINE DE DADOS ===
+[2025-01-05 10:00:01] Iniciando Step 1: Ingestao de Dados
+[2025-01-05 10:00:02] Ingestao concluida. Linhas carregadas: 112650
+[2025-01-05 10:00:02] Iniciando Step 2: Validacao de Qualidade
+[2025-01-05 10:00:02] Validacao concluida com sucesso
+[2025-01-05 10:00:02] Iniciando Step 3: Transformacao e Modelagem
+[2025-01-05 10:00:03] Iniciando Step 4: Carga (Save)
+[2025-01-05 10:00:03] PIPELINE FINALIZADO COM SUCESSO
+---
+
