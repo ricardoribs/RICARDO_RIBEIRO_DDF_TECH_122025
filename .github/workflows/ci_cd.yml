@@ -1,0 +1,42 @@
+name: Pipeline CI/CD 🚀
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Baixa o seu código para a máquina virtual do GitHub
+    - name: 📥 Checkout do Código
+      uses: actions/checkout@v3
+
+    # 2. Instala o Python
+    - name: 🐍 Configurar Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    # 3. Instala as bibliotecas do requirements.txt
+    - name: 📦 Instalar Dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. Executa os Testes Unitários (Pipeline Logic)
+    - name: 🧪 Rodar Testes Unitários (Pytest)
+      run: |
+        # Adiciona a raiz ao PYTHONPATH para imports funcionarem
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        pytest tests/ -v
+
+    # 5. Executa a Validação de Dados (Data Quality)
+    # Nota: Isso assume que os CSVs estão no repo. 
+    # Em produção real, baixaríamos do S3/Data Lake aqui.
+    - name: 🛡️ Validar Dados (Great Expectations)
+      run: |
+        python 04_data_quality/validacao_qualidade.py

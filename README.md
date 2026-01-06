@@ -1,5 +1,7 @@
 # Case Técnico Dadosfera – Engenharia de Dados
 
+![CI/CD Pipeline](https://github.com/ricardoribs/RICARDO_RIBEIRO_DDF_TECH_122025/actions/workflows/ci_cd.yml/badge.svg)
+
 **Autor:** Ricardo Ribeiro
 **Data:** Dezembro/2025
 **Contexto:** Implementação de Plataforma de Dados End-to-End para E-commerce.
