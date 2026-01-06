@@ -46,7 +46,8 @@ Implementação de um **Logger Estruturado** (`pipeline_avancado_observabilidade
 3.  **Fail-Fast:** Interrupção automática se o *Quality Score* cair abaixo de 95%.
 4.  **Relatório Automático:** Geração de HTML pós-execução com resumo do job.
 
-### Exemplo de Log JSON Gerado:
+## 📄 Exemplo de Log JSON Gerado
+
 ```json
 {
   "timestamp": "2025-01-07T10:00:01",
@@ -60,6 +61,8 @@ Implementação de um **Logger Estruturado** (`pipeline_avancado_observabilidade
     "throughput_records_per_sec": 45320.5
   }
 }
+```
+
 ---
 
 ## Como Executar
@@ -68,12 +71,17 @@ Execute o pipeline ETL localmente com o comando abaixo:
 
 ```bash
 python etl_pipeline.py
+```
 
 ---
 
 ## Logs de Execução
-O pipeline gera um arquivo de log (pipeline_log.txt) para auditoria de cada execução.
-Exemplo de Log:
+
+O pipeline gera um arquivo de log (`pipeline_log.txt`) para auditoria de cada execução.
+
+### Exemplo de Log
+
+```text
 [2025-01-05 10:00:01] === INICIO DO PIPELINE DE DADOS ===
 [2025-01-05 10:00:01] Iniciando Step 1: Ingestao de Dados
 [2025-01-05 10:00:02] Ingestao concluida. Linhas carregadas: 112650
@@ -82,5 +90,4 @@ Exemplo de Log:
 [2025-01-05 10:00:02] Iniciando Step 3: Transformacao e Modelagem
 [2025-01-05 10:00:03] Iniciando Step 4: Carga (Save)
 [2025-01-05 10:00:03] PIPELINE FINALIZADO COM SUCESSO
----
-
+```
