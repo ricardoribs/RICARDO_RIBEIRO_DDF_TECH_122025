@@ -51,3 +51,32 @@ Exemplo de Log:
 [2025-01-05 10:00:02] Iniciando Step 3: Transformacao e Modelagem
 [2025-01-05 10:00:03] Iniciando Step 4: Carga (Save)
 [2025-01-05 10:00:03] PIPELINE FINALIZADO COM SUCESSO
+---
+## Diferencial: Observabilidade Avançada
+
+Implementação de um **Logger Estruturado** (`pipeline_avancado_observabilidade.py`) que vai além de logs de texto simples.
+
+### Recursos Implementados:
+1.  **JSON Logging:** Logs estruturados legíveis por máquina (prontos para Datadog/Splunk).
+2.  **Métricas de Negócio:** Coleta automática de:
+    * Throughput (registros/segundo).
+    * Quality Score (baseado em regras de validação).
+    * Latência por etapa.
+3.  **Fail-Fast:** Interrupção automática se o *Quality Score* cair abaixo de 95%.
+4.  **Relatório Automático:** Geração de HTML pós-execução com resumo do job.
+
+### Exemplo de Log JSON Gerado:
+```json
+{
+  "timestamp": "2025-01-07T10:00:01",
+  "execution_id": "20250107_1000",
+  "pipeline": "olist_etl_production",
+  "step": "pipeline",
+  "status": "SUCCESS",
+  "metrics": {
+    "records_ingested": 112650,
+    "quality_score": 100.0,
+    "throughput_records_per_sec": 45320.5
+  }
+}
+---
