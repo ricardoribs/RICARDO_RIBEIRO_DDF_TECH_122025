@@ -79,6 +79,19 @@ Implementação avançada de Slowly Changing Dimensions (SCD) para a tabela DIM_
 
 * Benefício: Permite Time Travel (analisar vendas baseadas na localização do cliente no momento da compra, não na localização atual).
 
+## ⚡ Análise de Performance (Benchmark)
+
+Foi realizado um teste comparativo (`EXPLAIN ANALYZE`) entre o modelo transacional original e o Star Schema proposto.
+
+**Cenário:** Agregação de receita mensal por categoria.
+
+| Métrica | Modelo Transacional (Bronze) | Star Schema (Gold) | Melhoria |
+| :--- | :--- | :--- | :--- |
+| **Complexidade** | 5 JOINs (Strings) | 2 JOINs (Inteiros) | **Simplificação de 60%** |
+| **Tempo Médio** | ~450ms | ~80ms | **5.6x Mais Rápido** 🚀 |
+
+> 📄 *Veja o script de teste completo em: [`performance_analysis.sql`](./performance_analysis.sql)*
+
 
 
 ## Modelagem Detalhada
