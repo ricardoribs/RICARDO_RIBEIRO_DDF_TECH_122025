@@ -82,12 +82,6 @@ Para garantir a confiabilidade do código, foram implementados testes unitários
 2.  **Validação:** Garante que preços negativos e fretes inválidos sejam detectados pelas métricas.
 3.  **Transformação:** Valida a matemática da agregação (Soma de Receita) para a camada Gold.
 
-**Como rodar os testes:**
-```bash
-pip install pytest
-pytest tests/ -v
-
----
 ---
 
 ## 🏗️ Diagrama de Arquitetura
