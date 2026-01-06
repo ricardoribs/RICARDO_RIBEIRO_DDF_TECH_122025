@@ -16,7 +16,7 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 ## Apresentação do Case (Item 10)
 
-* [Link para apresentação executiva (YouTube)](INSIRA_SEU_LINK_AQUI)
+* [Link para apresentação executiva (YouTube)]
 
 ---
 
@@ -24,9 +24,9 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 **Objetivo:** Definir escopo, estrutura do repositório, metodologia ágil e riscos do projeto.
 
-| ID | Atividade             | Status    | Entrega                                     |
-| -- | --------------------- | --------- | ------------------------------------------- |
-| 00 | Planejamento e Kanban | Concluído | Metodologia Ágil e Estrutura do Repositório |
+| ID | Atividade | Status | Entrega |
+| :-- | :--- | :--- | :--- |
+| 00 | [Planejamento e Kanban](./00_planejamento/) | Concluído | Metodologia Ágil e Estrutura do Repositório |
 
 ---
 
@@ -36,10 +36,10 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 **Fonte:** Brazilian E-Commerce Public Dataset by Olist (>100k pedidos)
 
-| ID | Atividade                                   | Status    | Dependência |
-| -- | ------------------------------------------- | --------- | ----------- |
-| 01 | Seleção e Aquisição da Base Olist           | Concluído | 00          |
-| 02 | Ingestão via PostgreSQL (Neon) na Dadosfera | Concluído | 01          |
+| ID | Atividade | Status | Dependência |
+| :-- | :--- | :--- | :--- |
+| 01 | [Seleção e Aquisição da Base Olist](./01_base_dados/) | Concluído | 00 |
+| 02 | [Ingestão via PostgreSQL (Neon) na Dadosfera](./01_base_dados/) | Concluído | 01 |
 
 ---
 
@@ -47,11 +47,11 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 **Objetivo:** Garantir consistência, qualidade dos dados e enriquecimento semântico.
 
-| ID | Atividade                                | Status    | Dependência |
-| -- | ---------------------------------------- | --------- | ----------- |
-| 03 | Catalogação e Dicionário de Dados        | Concluído | 02          |
-| 04 | Data Quality com Great Expectations      | Concluído | 03          |
-| 05 | GenAI – Enriquecimento com Google Gemini | Concluído | 01, 02      |
+| ID | Atividade | Status | Dependência |
+| :-- | :--- | :--- | :--- |
+| 03 | [Catalogação e Dicionário de Dados](./01_base_dados/dicionario_dados.md) | Concluído | 02 |
+| 04 | [Data Quality com Great Expectations](./04_data_quality/) | Concluído | 03 |
+| 05 | [GenAI – Enriquecimento com Google Gemini](./05_genai_llm/) | Concluído | 01, 02 |
 
 ---
 
@@ -59,11 +59,11 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 **Objetivo:** Disponibilizar dados analíticos prontos para BI e produtos de dados.
 
-| ID | Atividade                                     | Status    | Dependência |
-| -- | --------------------------------------------- | --------- | ----------- |
-| 06 | Modelagem Dimensional – Star Schema (Kimball) | Concluído | 04, 05      |
-| 07 | Dashboard Analítico (Metabase + Snowflake)    | Concluído | 06          |
-| 09 | Data App – Streamlit Interativo               | Concluído | 07          |
+| ID | Atividade | Status | Dependência |
+| :-- | :--- | :--- | :--- |
+| 06 | [Modelagem Dimensional – Star Schema (Kimball)](./06_modelagem/) | Concluído | 04, 05 |
+| 07 | [Dashboard Analítico (Metabase + Snowflake)](./07_analise_visualizacao/) | Concluído | 06 |
+| 09 | [Data App – Streamlit Interativo](./09_data_app/) | Concluído | 07 |
 
 ---
 
@@ -71,9 +71,9 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 **Objetivo:** Garantir reprodutibilidade, orquestração e confiabilidade dos pipelines.
 
-| ID | Atividade                           | Status    | Dependência |
-| -- | ----------------------------------- | --------- | ----------- |
-| 08 | Pipelines Automatizados com Prefect | Concluído | 06          |
+| ID | Atividade | Status | Dependência |
+| :-- | :--- | :--- | :--- |
+| 08 | [Pipelines Automatizados com Prefect](./08_pipelines/) | Concluído | 06 |
 
 ---
 
@@ -88,7 +88,7 @@ O projeto conta com uma suíte robusta de testes utilizando **pytest**:
 
 ```bash
 pytest tests/ -v
-
+```
 ---
 
 ## Diagrama de Arquitetura
