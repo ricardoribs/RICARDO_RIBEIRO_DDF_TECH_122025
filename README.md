@@ -73,6 +73,19 @@ Este projeto adota uma abordagem híbrida (Modern Data Stack), combinando planej
 | -- | ------------------------------------------------------ | --------- | ----------- |
 | 08 | [Pipelines Automatizados com Prefect](./08_pipelines/) | Concluído | 06          |
 
+## Testes Automatizados (Unit Tests)
+
+Para garantir a confiabilidade do código, foram implementados testes unitários utilizando `pytest`.
+
+**Cobertura dos Testes:**
+1.  **Ingestão:** Verifica se o DataFrame é carregado corretamente e não está vazio.
+2.  **Validação:** Garante que preços negativos e fretes inválidos sejam detectados pelas métricas.
+3.  **Transformação:** Valida a matemática da agregação (Soma de Receita) para a camada Gold.
+
+**Como rodar os testes:**
+```bash
+pip install pytest
+pytest tests/ -v
 ---
 
 ## 🏗️ Diagrama de Arquitetura
