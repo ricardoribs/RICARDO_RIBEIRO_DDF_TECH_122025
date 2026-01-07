@@ -1,8 +1,8 @@
 import google.generativeai as genai
 import os
 
-# COLE SUA CHAVE AQUI PARA TESTAR
-GOOGLE_API_KEY = "AIzaSyCb6SgI85CZXs2z5PzS2_mtxVeXJWRvajY" 
+# Quando for testar
+GOOGLE_API_KEY = "teste aqui sua chave, não esqueça de apagar e não commitar"
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
