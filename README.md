@@ -127,7 +127,7 @@ graph TD
         G3["GenAI (Gemini + Stable Diffusion)\nGeração de insights visuais"]:::gold
         S2 -->|Agregação| G1
         G1 -->|Visualização| G2
-        G2 -.->|Insights AI| G3
+        G2 --> G3
 ```
 
 Observação: A infraestrutura foi migrada para Linux (WSL) para eliminar dependências de winutils e simular um cluster Spark real.
