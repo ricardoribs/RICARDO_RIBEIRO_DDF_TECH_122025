@@ -1,22 +1,20 @@
 # Case Técnico Dadosfera – Engenharia de Dados
 
 ![CI/CD Pipeline](https://github.com/ricardoribs/RICARDO_RIBEIRO_DDF_TECH_122025/actions/workflows/ci_cd.yml/badge.svg)
+![Stack](https://img.shields.io/badge/Stack-PySpark%20|%20WSL2%20|%20Streamlit-blue)
+![Architecture](https://img.shields.io/badge/Architecture-Medallion%20Lakehouse-orange)
 
 **Autor:** Ricardo Ribeiro  
-**Data:** Dezembro/2025  
+**Data:** Dezembro/2025 (Atualizado em Jan/2026)  
 **Contexto:** Implementação de Plataforma de Dados End-to-End para E-commerce
 
 ---
 
-## Visão Geral
+## Visão Geral e Evolução da Arquitetura
 
-Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando planejamento estruturado com entregas incrementais. O objetivo foi transformar dados brutos de e-commerce em dados analíticos confiáveis, governados e prontos para consumo, cobrindo ingestão, qualidade, modelagem, analytics e automação.
+Este projeto adota uma abordagem híbrida (**Modern Data Stack**). Inicialmente concebido com scripts Pandas e bancos relacionais, o projeto foi **migrado para uma Arquitetura Big Data** utilizando **Apache Spark (PySpark)** rodando em ambiente **Linux (WSL 2)**. 
 
----
-
-## Apresentação do Case (Item 10)
-
-* [Link para apresentação executiva (YouTube)]
+O objetivo atual é simular um ambiente produtivo escalável, transformando dados brutos em um **Lakehouse (Medallion Architecture)**, cobrindo ingestão, schema enforcement, particionamento e analytics com IA.
 
 ---
 
@@ -30,74 +28,73 @@ Este projeto adota uma abordagem híbrida (**Modern Data Stack**), combinando pl
 
 ---
 
-## Fase 1 – Bronze (Ingestão)
+## Fase 1 – Bronze (Ingestão Big Data)
 
-**Objetivo:** Garantir aquisição, persistência e rastreabilidade dos dados brutos.
+**Objetivo:** Garantir aquisição, persistência e rastreabilidade dos dados brutos em formato otimizado.
 
 **Fonte:** Brazilian E-Commerce Public Dataset by Olist (>100k pedidos)
 
 | ID | Atividade | Status | Dependência |
 | :-- | :--- | :--- | :--- |
 | 01 | [Seleção e Aquisição da Base Olist](./01_base_dados/) | Concluído | 00 |
-| 02 | [Ingestão via PostgreSQL (Neon) na Dadosfera](./01_base_dados/) | Concluído | 01 |
+| 02 | [Ingestão via PySpark (Lakehouse Local)](./08_pipelines/) | **Atualizado** | 01 |
 
 ---
 
-## Fase 2 – Silver (Qualidade e Enriquecimento)
+## Fase 2 – Silver (Refinamento e Schema)
 
-**Objetivo:** Garantir consistência, qualidade dos dados e enriquecimento semântico.
+**Objetivo:** Garantir consistência, tipagem forte e particionamento dos dados para performance.
 
 | ID | Atividade | Status | Dependência |
 | :-- | :--- | :--- | :--- |
 | 03 | [Catalogação e Dicionário de Dados](./01_base_dados/dicionario_dados.md) | Concluído | 02 |
-| 04 | [Data Quality com Great Expectations](./04_data_quality/) | Concluído | 03 |
-| 05 | [GenAI – Enriquecimento com Google Gemini](./05_genai_llm/) | Concluído | 01, 02 |
+| 04 | [Schema Enforcement & Limpeza (Spark)](./08_pipelines/) | **Atualizado** | 03 |
+| 05 | [GenAI – Enriquecimento via App](./09_data_app/) | Concluído | 01, 02 |
 
 ---
 
-## Fase 3 – Gold (Modelagem e Consumo)
+## Fase 3 – Gold (Agregação e Consumo)
 
-**Objetivo:** Disponibilizar dados analíticos prontos para BI e produtos de dados.
+**Objetivo:** Disponibilizar dados analíticos (KPIs) prontos para visualização e produtos de IA.
 
 | ID | Atividade | Status | Dependência |
 | :-- | :--- | :--- | :--- |
-| 06 | [Modelagem Dimensional – Star Schema (Kimball)](./06_modelagem/) | Concluído | 04, 05 |
-| 07 | [Dashboard Analítico (Metabase + Snowflake)](./07_analise_visualizacao/) | Concluído | 06 |
-| 09 | [Data App – Streamlit Interativo](./09_data_app/) | Concluído | 07 |
+| 06 | [Modelagem Dimensional e Agregação Spark](./08_pipelines/) | **Atualizado** | 04 |
+| 07 | [Dashboard Analítico Integrado (Streamlit)](./09_data_app/) | **Atualizado** | 06 |
+| 09 | [Data App – GenAI + Analytics](./09_data_app/) | Concluído | 07 |
 
 ---
 
-## Fase 4 – Automação
+## Fase 4 – Automação e Infraestrutura
 
-**Objetivo:** Garantir reprodutibilidade, orquestração e confiabilidade dos pipelines.
+**Objetivo:** Garantir execução em ambiente Linux (WSL) e orquestração de jobs Spark.
 
 | ID | Atividade | Status | Dependência |
 | :-- | :--- | :--- | :--- |
-| 08 | [Pipelines Automatizados com Prefect](./08_pipelines/) | Concluído | 06 |
+| 08 | [Pipeline PySpark (Medallion Architecture)](./08_pipelines/) | **Atualizado** | 06 |
 
 ---
 
 ## Testes Automatizados
 
-O projeto conta com uma suíte robusta de testes utilizando **pytest**:
+O projeto conta com uma suíte robusta de testes utilizando **pytest**, adaptada para validar sessões Spark e lógica de transformação:
 
-* **Unit Tests:** Verificam a lógica isolada de cada função.
-* **Integration Tests:** Simulam a execução completa do pipeline (Leitura → Transformação → Escrita).
+* **Unit Tests:** Verificam a lógica de agregação do PySpark.
+* **Ambiente:** Testes rodam em CI/CD instalando Java e Spark automaticamente.
 
 ### Como executar
 
 ```bash
 pytest tests/ -v
 ```
+
 ---
 
-## Diagrama de Arquitetura
-
-O fluxo de dados segue uma arquitetura **Lakehouse**, com ingestão transacional via **PostgreSQL (Neon)** na plataforma **Dadosfera**, camada analítica em **Snowflake** e visualização via **Metabase**.
+## Diagrama de Arquitetura (Lakehouse)
+O fluxo de dados segue uma arquitetura Medallion, com processamento distribuído via Spark no WSL, persistência em Parquet e consumo via Streamlit com integração de IA.
 
 ```mermaid
 graph TD
-
     classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px;
     classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:white;
     classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:black;
@@ -107,67 +104,57 @@ graph TD
         P0["Item 0: Planejamento & PMBOK"]:::plan
     end
 
-    subgraph Bronze["Fase 1 - Ingestão (Bronze)"]
+    subgraph Ingestao["Fase 1 - Processamento Spark (WSL)"]
         B1["Fonte Olist (CSV)"]:::bronze
-        B2["PostgreSQL Neon (Dadosfera)"]:::bronze
+        B2["PySpark Ingestion (Bronze Layer)"]:::bronze
         B1 --> B2
     end
 
-    subgraph Silver["Fase 2 - Qualidade & Enriquecimento (Silver)"]
-        S1["Catalogação & Dicionário"]:::silver
-        S2["Data Quality (Great Expectations)"]:::silver
-        S3["GenAI / NLP (Gemini)"]:::silver
-        B2 --> S1
-        S1 --> S2
-        S2 --> S3
+    subgraph Refinamento["Fase 2 - Tratamento (Silver)"]
+        S1["Schema Enforcement"]:::silver
+        S2["Particionamento (Ano/Mês)"]:::silver
+        B2 --> S1 --> S2
     end
 
-    subgraph Gold["Fase 3 - Modelagem & Consumo (Gold)"]
-        G1["Star Schema (Kimball)"]:::gold
-        G2["Snowflake (Analytics)"]:::gold
-        G3["Metabase (Dashboard)"]:::gold
-        G4["Streamlit Data App"]:::gold
-        S3 --> G1
+    subgraph Consumo["Fase 3 - Agregação (Gold) & App"]
+        G1["KPIs Agregados (Parquet)"]:::gold
+        G2["Streamlit (Dashboard)"]:::gold
+        G3["GenAI (Gemini + Stable Diffusion)"]:::gold
+        S2 --> G1
         G1 --> G2
-        G2 --> G3
-        G1 --> G4
-    end
-
-    subgraph Automacao["Fase 4 - Automação & Entrega"]
-        A1["Pipelines (Prefect / Dadosfera)"]
-        A2["Apresentação Final"]
-        A1 -.-> G1
-        G3 --> A2
-        G4 --> A2
+        G2 -.-> G3
     end
 ```
 
-**Observação:** A ingestão ocorre via PostgreSQL (Neon) na plataforma Dadosfera. A camada Gold é consumida no Snowflake, que atua como engine analítica para construção dos dashboards no Metabase.
+Observação: A infraestrutura foi migrada para Linux (WSL) para eliminar dependências de winutils e simular um cluster Spark real.
 
 ---
 
 ## Tech Stack & Estrutura do Repositório
+* 00_planejamento/ – Metodologia ágil, Kanban e planejamento
 
-* `00_planejamento/` – Metodologia ágil, Kanban e planejamento
-* `01_base_dados/` – Datasets brutos e dicionário de dados
-* `04_data_quality/` – Validação com Great Expectations
-* `05_genai_llm/` – Notebooks de NLP e LLM (Google Gemini)
-* `06_modelagem/` – Modelagem dimensional, DDLs e diagramas
-* `07_analise_visualizacao/` – Dashboards, KPIs e queries analíticas
-* `08_pipelines/` – Orquestração e automação (Prefect / Dadosfera)
-* `09_data_app/` – Aplicação interativa em Streamlit
+* 01_base_dados/ – Datasets brutos (CSV)
+
+* 08_pipelines/ – CORE: Scripts PySpark (Bronze/Silver/Gold)
+
+* 09_data_app/ – Aplicação Streamlit com Dashboard e IA Generativa
+
+* 09_lakehouse/ – (Local) Estrutura de pastas do Data Lake
+
+* tests/ – Testes unitários para Spark
 
 ---
 
 ## Análise de Riscos Mitigados
 
-* **Rate Limit de API (GenAI):** Mitigado com backoff exponencial e uso do modelo Gemini Flash
-* **Qualidade dos Dados:** Bloqueio de pipelines com Great Expectations (fail-fast)
-* **Segurança:** Credenciais gerenciadas via variáveis de ambiente (não versionadas)
-  
+* Escalabilidade: Migração de Pandas para Spark permite processar terabytes de dados.
+
+* Rate Limit de API (GenAI): Implementado sistema de Fallback (Gemini -> Prompt Manual -> Hugging Face) para garantir resiliência.
+
+* Segurança: Uso de .gitignore rigoroso para evitar vazamento de dados do Lakehouse
+
 ---
 
-<div align="center">
-  <h3>Desenvolvido por Ricardo Ribeiro</h3>
-  <p>Case Técnico Dadosfera • Dezembro/2025</p>
-</div>
+<div align="center"> <h3>Desenvolvido por Ricardo Ribeiro</h3> <p>Case Técnico Dadosfera • Dezembro/2025 • Atualizado Jan/2026</p> </div>
+
+---
