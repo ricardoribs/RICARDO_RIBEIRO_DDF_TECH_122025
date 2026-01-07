@@ -93,34 +93,30 @@ pytest tests/ -v
 ## Diagrama de Arquitetura (Lakehouse)
 O fluxo de dados segue uma arquitetura Medallion, com processamento distribuído via Spark no WSL, persistência em Parquet e consumo via Streamlit com integração de IA.
 
+
 ```mermaid
 graph TD
-    %% === Definição de classes coloridas ===
     classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px,color:white;
     classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:white;
     classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:black;
     classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:black;
 
-    %% === Planejamento ===
     subgraph Planejamento["Fase 0 - Planejamento"]
         P0["Item 0: Planejamento & PMBOK\nDefinição de escopo, cronograma e riscos"]:::plan
     end
 
-    %% === Ingestão Bronze ===
     subgraph Ingestao["Fase 1 - Processamento Spark (WSL)"]
         B1["Fonte Olist (CSV)\nDados brutos"]:::bronze
         B2["PySpark Ingestion\n(Bronze Layer)"]:::bronze
         B1 -->|Extração e Load| B2
     end
 
-    %% === Refinamento Silver ===
     subgraph Refinamento["Fase 2 - Tratamento (Silver)"]
         S1["Schema Enforcement\nValidação de colunas e tipos"]:::silver
         S2["Particionamento (Ano/Mês)\nOrganização para análise"]:::silver
         B2 -->|Transformação| S1 -->|Preparação| S2
     end
 
-    %% === Consumo Gold ===
     subgraph Consumo["Fase 3 - Agregação (Gold) & App"]
         G1["KPIs Agregados (Parquet)\nDados prontos para análise"]:::gold
         G2["Streamlit (Dashboard)\nVisualização interativa"]:::gold
@@ -130,7 +126,9 @@ graph TD
         G2 --> G3
 ```
 
-Observação: A infraestrutura foi migrada para Linux (WSL) para eliminar dependências de winutils e simular um cluster Spark real.
+---
+
+* Observação: A infraestrutura foi migrada para Linux (WSL) para eliminar dependências de winutils e simular um cluster Spark real.
 
 ---
 
