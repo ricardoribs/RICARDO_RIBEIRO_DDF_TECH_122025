@@ -102,25 +102,25 @@ graph TD
     classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:black;
 
     subgraph Planejamento["Fase 0 - Planejamento"]
-        P0["Item 0: Planejamento & PMBOK\nDefinição de escopo, cronograma e riscos"]:::plan
+        P0["Item 0: Planejamento & PMBOK - Definição de escopo, cronograma e riscos"]:::plan
     end
 
     subgraph Ingestao["Fase 1 - Processamento Spark (WSL)"]
-        B1["Fonte Olist (CSV)\nDados brutos"]:::bronze
-        B2["PySpark Ingestion\n(Bronze Layer)"]:::bronze
+        B1["Fonte Olist (CSV) - Dados brutos"]:::bronze
+        B2["PySpark Ingestion (Bronze Layer)"]:::bronze
         B1 -->|Extração e Load| B2
     end
 
     subgraph Refinamento["Fase 2 - Tratamento (Silver)"]
-        S1["Schema Enforcement\nValidação de colunas e tipos"]:::silver
-        S2["Particionamento (Ano/Mês)\nOrganização para análise"]:::silver
+        S1["Schema Enforcement - Validação de colunas e tipos"]:::silver
+        S2["Particionamento (Ano/Mês) - Organização para análise"]:::silver
         B2 -->|Transformação| S1 -->|Preparação| S2
     end
 
     subgraph Consumo["Fase 3 - Agregação (Gold) & App"]
-        G1["KPIs Agregados (Parquet)\nDados prontos para análise"]:::gold
-        G2["Streamlit (Dashboard)\nVisualização interativa"]:::gold
-        G3["GenAI (Gemini + Stable Diffusion)\nGeração de insights visuais"]:::gold
+        G1["KPIs Agregados (Parquet) - Dados prontos para análise"]:::gold
+        G2["Streamlit (Dashboard) - Visualização interativa"]:::gold
+        G3["GenAI (Gemini + Stable Diffusion) - Geração de insights visuais"]:::gold
         S2 -->|Agregação| G1
         G1 -->|Visualização| G2
         G2 --> G3
