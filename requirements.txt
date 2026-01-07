@@ -1,5 +1,4 @@
-pandas
-great_expectations==0.18.19
-pytest
-streamlit
-plotly
+pyspark==3.4.1
+pytest>=7.4
+pandas>=2.0
+plotly>=5.18

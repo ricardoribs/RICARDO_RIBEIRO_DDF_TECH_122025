@@ -1,300 +1,191 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime, timedelta
 import os
+import requests
+import io
+from PIL import Image
+import google.generativeai as genai
+from huggingface_hub import InferenceClient
 
-# =====================================================
-# CONFIGURAÇÃO DA PÁGINA
-# =====================================================
-st.set_page_config(
-    page_title="Olist | Analytics",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# ============================================
+# 1. CONFIGURAÇÃO E CAMINHOS
+# ============================================
+st.set_page_config(page_title="Olist Lakehouse & AI", layout="wide", page_icon="🛍️")
 
-# =====================================================
-# ESTILO GLOBAL (DESIGN SYSTEM)
-# =====================================================
-st.markdown("""
-<style>
-:root {
-    --primary: #111827;
-    --secondary: #6b7280;
-    --accent: #2563eb;
-    --border: #e5e7eb;
-    --bg: #f9fafb;
-}
+# Garante que o caminho para o Lakehouse seja encontrado independente de onde o script rode
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+GOLD_PATH = os.path.join(SCRIPT_DIR, '..', '09_lakehouse', 'gold', 'pedidos_por_mes')
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
+# ============================================
+# 2. FUNÇÕES DE IA (CÉREBRO E PINTOR)
+# ============================================
 
-.block-container {
-    padding-top: 2rem;
-    background-color: var(--bg);
-}
+def get_creative_prompt(api_key, product_desc):
+    """
+    Usa o Google Gemini. Se der erro de cota (429), usa um prompt de fallback 
+    para garantir que a imagem seja gerada na demo.
+    """
+    try:
+        genai.configure(api_key=api_key)
+        
+        # Vamos tentar o 1.5 Flash que costuma ter limites mais altos que o 2.0
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt_tecnico = f"""
+        Task: Create a detailed, high-quality image generation prompt for Stable Diffusion based on this product: "{product_desc}".
+        Requisitos: Professional studio lighting, 8k, photorealistic, product focus.
+        Output ONLY the prompt text in English.
+        """
+        
+        response = model.generate_content(prompt_tecnico)
+        return response.text
 
-.section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-}
+    except Exception as e:
+        # --- ZONA DE SALVAMENTO DE DEMO ---
+        # Se o Gemini falhar (Cota excedida), não paramos o app.
+        # Criamos um prompt manual em inglês usando f-string.
+        print(f"⚠️ Aviso: Gemini falhou ({e}). Usando Fallback.")
+        st.warning("⚠️ Nota: Cota de IA de texto excedida. Usando modo de contingência para gerar a imagem.")
+        
+        # Fallback: Tradução técnica "burra" mas funcional para a imagem não falhar
+        return f"Professional advertising photography of {product_desc}, cinematic lighting, 8k resolution, highly detailed, photorealistic, blurred background, product focus."
 
-.section-subtitle {
-    font-size: 0.9rem;
-    color: var(--secondary);
-    margin-bottom: 1.5rem;
-}
+def generate_image_hf(api_token, prompt):
+    """
+    Usa a API da Hugging Face com o modelo v1.5 (Mais estável e rápido).
+    """
+    # Modelo v1.5: Menor qualidade que o XL, mas funciona quase sempre.
+    API_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5"
+    headers = {"Authorization": f"Bearer {api_token}"}
+    
+    try:
+        response = requests.post(API_URL, headers=headers, json={"inputs": prompt})
+        
+        # Se a API pedir para esperar (modelo carregando), esperamos um pouco
+        if "estimated_time" in response.json():
+            st.info(f"O modelo está 'acordando'. Aguarde {response.json()['estimated_time']:.0f}s...")
+            import time
+            time.sleep(response.json()['estimated_time'])
+            # Tenta de novo
+            response = requests.post(API_URL, headers=headers, json={"inputs": prompt})
 
-.kpi-card {
-    background-color: white;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border);
-}
+        if response.status_code != 200:
+            st.error(f"Erro HF ({response.status_code}): {response.text}")
+            return None
+            
+        return Image.open(io.BytesIO(response.content))
+        
+    except Exception as e:
+        # PLANO Z: Se tudo falhar (internet/API), retorna um Placeholder para não estragar o vídeo
+        st.error(f"Erro de conexão: {e}")
+        return None
 
-.kpi-title {
-    font-size: 0.8rem;
-    color: var(--secondary);
-}
+# ============================================
+# 3. INTERFACE DO APLICATIVO
+# ============================================
+st.title("🛍️ Plataforma Olist: Analytics & Creative AI")
+st.markdown("Uma solução completa de Engenharia de Dados: do Lakehouse à Inteligência Artificial.")
 
-.kpi-value {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: var(--primary);
-}
+tab1, tab2 = st.tabs(["📊 Dashboard de Vendas (Lakehouse)", "🎨 Estúdio de Marketing (GenAI)"])
 
-footer {
-    visibility: hidden;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =====================================================
-# FUNÇÕES AUXILIARES
-# =====================================================
-def kpi(title, value):
-    st.markdown(f"""
-    <div class="kpi-card">
-        <div class="kpi-title">{title}</div>
-        <div class="kpi-value">{value}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-def apply_plot_theme(fig):
-    fig.update_layout(
-        template="simple_white",
-        font=dict(size=12),
-        title_font_size=16,
-        margin=dict(l=20, r=20, t=50, b=20),
-        hovermode="x unified"
-    )
-    return fig
-
-
-@st.cache_data(ttl=3600)
-def load_data():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(
-        base_dir, "..", "01_base_dados", "olist_order_items_dataset.csv"
-    )
-
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
-
-    df = pd.read_csv(file_path)
-    df["shipping_limit_date"] = pd.to_datetime(df["shipping_limit_date"])
-    df["data"] = df["shipping_limit_date"].dt.date
-    return df
-
-
-# =====================================================
-# HEADER
-# =====================================================
-st.markdown("## Olist • Visão Executiva")
-st.markdown(
-    "<div class='section-subtitle'>Análise consolidada de vendas, logística e performance operacional</div>",
-    unsafe_allow_html=True
-)
-
-# =====================================================
-# LOAD DATA
-# =====================================================
-try:
-    data = load_data()
-except Exception as e:
-    st.error(f"Erro ao carregar dados: {e}")
-    st.stop()
-
-# =====================================================
-# SIDEBAR — FILTROS
-# =====================================================
-with st.sidebar:
-    st.markdown("### Filtros")
-    st.caption("Aplicados globalmente no dashboard")
-
-    preset = st.selectbox(
-        "Período",
-        ["Tudo", "7 dias", "30 dias", "12 meses", "Personalizado"]
-    )
-
-    min_date = data["data"].min()
-    max_date = data["data"].max()
-
-    if preset == "7 dias":
-        start_date = max_date - timedelta(days=7)
-        end_date = max_date
-    elif preset == "30 dias":
-        start_date = max_date - timedelta(days=30)
-        end_date = max_date
-    elif preset == "12 meses":
-        start_date = max_date - timedelta(days=365)
-        end_date = max_date
-    elif preset == "Personalizado":
-        date_range = st.date_input(
-            "Intervalo",
-            [min_date, max_date],
-            min_value=min_date,
-            max_value=max_date
-        )
-        start_date, end_date = date_range
-    else:
-        start_date, end_date = min_date, max_date
-
-    st.caption(f"{start_date} → {end_date}")
-
-    if st.button("Resetar filtros"):
-        st.cache_data.clear()
-        st.rerun()
-
-# =====================================================
-# APLICA FILTROS
-# =====================================================
-df = data[
-    (data["data"] >= start_date) &
-    (data["data"] <= end_date)
-]
-
-# =====================================================
-# KPIs
-# =====================================================
-receita = df["price"].sum()
-pedidos = df["order_id"].nunique()
-ticket = receita / pedidos if pedidos > 0 else 0
-frete = df["freight_value"].mean()
-
-k1, k2, k3, k4 = st.columns(4)
-
-with k1:
-    kpi("Receita Total", f"R$ {receita:,.2f}")
-with k2:
-    kpi("Pedidos", f"{pedidos:,}")
-with k3:
-    kpi("Ticket Médio", f"R$ {ticket:,.2f}")
-with k4:
-    kpi("Frete Médio", f"R$ {frete:,.2f}")
-
-st.markdown("---")
-
-# =====================================================
-# TABS
-# =====================================================
-tab1, tab2, tab3 = st.tabs([
-    "Evolução",
-    "Rankings",
-    "Distribuição"
-])
-
-# =====================================================
-# TAB 1 — EVOLUÇÃO
-# =====================================================
+# --- ABA 1: ANALYTICS ---
 with tab1:
-    st.markdown("<div class='section-title'>Evolução da Receita</div>", unsafe_allow_html=True)
-
-    gran = st.radio("Granularidade", ["Dia", "Mês"], horizontal=True)
-
-    chart_df = df.copy()
-    if gran == "Mês":
-        chart_df["periodo"] = pd.to_datetime(chart_df["data"]).dt.to_period("M").dt.to_timestamp()
+    st.header("KPIs de Vendas (Dados Processados via Spark)")
+    
+    if not os.path.exists(GOLD_PATH):
+        st.error(f"❌ Erro Crítico: O caminho do Lakehouse não foi encontrado: {GOLD_PATH}")
+        st.info("Dica: Verifique se o pipeline PySpark rodou com sucesso e gerou a pasta 'gold'.")
     else:
-        chart_df["periodo"] = pd.to_datetime(chart_df["data"])
+        try:
+            # Leitura Otimizada de Parquet (Engine PyArrow)
+            df = pd.read_parquet(GOLD_PATH, engine='pyarrow')
+            
+            # Pequeno tratamento para exibição (Pandas)
+            df['ano'] = df['order_year'].astype(int)
+            df['mes'] = df['order_month'].astype(int)
+            # Cria data para ordenação no gráfico
+            df['data_ref'] = pd.to_datetime(df['ano'].astype(str) + '-' + df['mes'].astype(str) + '-01')
+            df = df.sort_values('data_ref')
 
-    chart_df = chart_df.groupby("periodo")["price"].sum().reset_index()
+            # Métricas
+            col1, col2, col3 = st.columns(3)
+            total_pedidos = df['count'].sum()
+            melhor_mes = df.loc[df['count'].idxmax()]
+            
+            col1.metric("Volume Total de Pedidos", f"{total_pedidos:,.0f}")
+            col2.metric("Média Mensal", f"{df['count'].mean():,.0f}")
+            col3.metric("Pico de Vendas", f"{melhor_mes['count']:,.0f} ({melhor_mes['mes']}/{melhor_mes['ano']})")
 
-    fig = px.area(
-        chart_df,
-        x="periodo",
-        y="price",
-        labels={"price": "Receita (R$)", "periodo": "Data"}
-    )
+            st.divider()
 
-    st.plotly_chart(apply_plot_theme(fig), use_container_width=True)
+            # Gráfico
+            fig = px.area(df, x='data_ref', y='count', title='Evolução Temporal de Pedidos', markers=True)
+            fig.update_layout(xaxis_title='Mês/Ano', yaxis_title='Qtd. Pedidos')
+            st.plotly_chart(fig, use_container_width=True)
+            
+        except Exception as e:
+            st.error(f"Erro ao ler dados do Lakehouse: {e}")
 
-# =====================================================
-# TAB 2 — RANKINGS
-# =====================================================
+# --- ABA 2: GENAI ---
 with tab2:
-    c1, c2 = st.columns(2)
-
-    with c1:
-        st.markdown("<div class='section-title'>Top Sellers</div>", unsafe_allow_html=True)
-        sellers = df.groupby("seller_id")["price"].sum().nlargest(10).reset_index()
-        fig = px.bar(
-            sellers,
-            x="price",
-            y="seller_id",
-            orientation="h",
-            labels={"price": "Receita (R$)", "seller_id": "Seller"}
+    st.header("✨ Gerador de Anúncios com IA")
+    st.markdown("""
+    Este módulo utiliza uma **Arquitetura de Agentes**:
+    1. **Google Gemini:** Cria o conceito artístico (Prompt Engineering).
+    2. **Stable Diffusion:** Renderiza a imagem final.
+    """)
+    
+    col_input, col_result = st.columns([1, 2])
+    
+    with col_input:
+        st.subheader("⚙️ Configuração")
+        
+        # Inputs de Chaves (Para não deixar hardcoded no código)
+        gemini_key = st.text_input("Gemini API Key:", type="password", help="Pegue no Google AI Studio")
+        hf_token = st.text_input("Hugging Face Token:", type="password", help="Pegue nas configurações do Hugging Face")
+        
+        st.divider()
+        
+        product_input = st.text_area(
+            "Descreva o produto para o anúncio:", 
+            placeholder="Ex: Uma cafeteira italiana vermelha em uma cozinha rústica com fumaça saindo.",
+            height=100
         )
-        fig.update_layout(yaxis={"categoryorder": "total ascending"})
-        st.plotly_chart(apply_plot_theme(fig), use_container_width=True)
+        
+        btn_generate = st.button("🎨 Criar Anúncio", type="primary", disabled=(not gemini_key or not hf_token or not product_input))
 
-    with c2:
-        st.markdown("<div class='section-title'>Top Produtos</div>", unsafe_allow_html=True)
-        products = df.groupby("product_id")["order_item_id"].count().nlargest(10).reset_index()
-        fig = px.bar(
-            products,
-            x="order_item_id",
-            y="product_id",
-            orientation="h",
-            labels={"order_item_id": "Quantidade", "product_id": "Produto"}
-        )
-        fig.update_layout(yaxis={"categoryorder": "total ascending"})
-        st.plotly_chart(apply_plot_theme(fig), use_container_width=True)
-
-# =====================================================
-# TAB 3 — DISTRIBUIÇÃO
-# =====================================================
-with tab3:
-    c1, c2 = st.columns(2)
-
-    with c1:
-        st.markdown("<div class='section-title'>Distribuição de Preços</div>", unsafe_allow_html=True)
-        limit = df["price"].quantile(0.95)
-        fig = px.histogram(
-            df[df["price"] <= limit],
-            x="price",
-            nbins=30
-        )
-        st.plotly_chart(apply_plot_theme(fig), use_container_width=True)
-
-    with c2:
-        st.markdown("<div class='section-title'>Preço vs Frete</div>", unsafe_allow_html=True)
-        sample = df.sample(min(2000, len(df)))
-        fig = px.scatter(
-            sample,
-            x="price",
-            y="freight_value",
-            opacity=0.5,
-            labels={"price": "Preço", "freight_value": "Frete"}
-        )
-        st.plotly_chart(apply_plot_theme(fig), use_container_width=True)
-
-# =====================================================
-# FOOTER
-# =====================================================
-st.markdown("---")
-st.caption(f"Atualizado em {datetime.now().strftime('%d/%m/%Y %H:%M')} • Cache ativo")
+    with col_result:
+        st.subheader("🖼️ Resultado")
+        
+        if btn_generate:
+            # 1. Passo: Gemini cria o prompt
+            with st.status("🤖 1. Acionando Google Gemini...", expanded=True) as status:
+                st.write("Criando roteiro artístico...")
+                creative_prompt = get_creative_prompt(gemini_key, product_input)
+                
+                if creative_prompt:
+                    st.success("Prompt criado com sucesso!")
+                    st.code(creative_prompt, language="text")
+                    
+                    # 2. Passo: Hugging Face cria a imagem
+                    status.update(label="🎨 2. Acionando Stable Diffusion...", state="running")
+                    image = generate_image_hf(hf_token, creative_prompt)
+                    
+                    if image:
+                        status.update(label="✅ Processo concluído!", state="complete", expanded=False)
+                        st.image(image, caption="Imagem gerada por IA", use_column_width=True)
+                        
+                        # Botão de Download
+                        buf = io.BytesIO()
+                        image.save(buf, format="PNG")
+                        st.download_button(
+                            label="⬇️ Baixar Imagem",
+                            data=buf.getvalue(),
+                            file_name="anuncio_ia.png",
+                            mime="image/png"
+                        )
+                    else:
+                        status.update(label="❌ Falha na geração da imagem", state="error")
+                else:
+                    status.update(label="❌ Falha no Gemini", state="error")
