@@ -119,9 +119,16 @@ dbt run --profiles-dir .
 ---
 
 ## Evidências de Execução
-Orquestração com Prefect (Sucesso)
+### Orquestração com Prefect (Sucesso)
+A imagem abaixo demonstra a execução bem-sucedida do fluxo no dashboard do Prefect, rodando em ambiente Linux (WSL) e gerenciando os jobs Spark.
 
-Transformação com dbt
+![Execução Prefect](./docs/images/prefect-execution-success.png)
+
+
+### Transformação com dbt
+Saída do terminal comprovando a materialização da tabela fato `gold_vendas_mensais` no DuckDB utilizando dbt.
+
+![Execução dbt](./docs/images/dbt-run-success.png)
 
 
 ---
