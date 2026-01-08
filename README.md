@@ -133,4 +133,4 @@ Saída do terminal comprovando a materialização da tabela fato `gold_vendas_me
 
 ---
 
-<div align="center"> <h3>Desenvolvido por Ricardo Ribeiro</h3> <p>Engenharia de Dados Sênior • Modern Data Stack</p> </div>
+<div align="center"> <h3>Desenvolvido por Ricardo Ribeiro</h3> <p>Engenheiro De Dados • Modern Data Stack</p> </div>
