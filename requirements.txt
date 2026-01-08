@@ -1,3 +1,4 @@
+pyspark==3.5.0
 pandas
 plotly
 streamlit
@@ -8,3 +9,4 @@ prefect>=2.14.0
 dbt-duckdb>=1.6.0
 great_expectations
 duckdb
+pytest

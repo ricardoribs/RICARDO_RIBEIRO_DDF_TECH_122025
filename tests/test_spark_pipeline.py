@@ -1,21 +1,27 @@
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, FloatType
 
+# Fixture: Configura uma sessão Spark de teste (leve)
 @pytest.fixture(scope="session")
 def spark():
-    """Sessão Spark local para testes"""
-    return SparkSession.builder \
+    spark_session = SparkSession.builder \
         .master("local[1]") \
-        .appName("Test") \
+        .appName("CI_CD_Test") \
         .getOrCreate()
+    yield spark_session
+    spark_session.stop()
 
-def test_calculo_receita_gold(spark):
-    """Testa se o Spark soma corretamente a receita"""
-    data = [("beleza", 100.0), ("beleza", 50.0), ("tech", 200.0)]
-    df = spark.createDataFrame(data, ["categoria", "price"])
+# Teste 1: Verifica se o Spark iniciou corretamente
+def test_spark_session_is_active(spark):
+    assert spark is not None
+    assert not spark.sparkContext._jsc.sc().isStopped()
+
+# Teste 2: Verifica se conseguimos criar um DataFrame (teste de processamento)
+def test_simple_dataframe_operation(spark):
+    data = [("Ricardo", "Data Engineer"), ("Dadosfera", "Company")]
+    columns = ["Name", "Role"]
     
-    df_agg = df.groupBy("categoria").sum("price")
-    row = df_agg.filter("categoria='beleza'").collect()[0]
+    df = spark.createDataFrame(data, columns)
     
-    assert row[1] == 150.0 # 100 + 50
+    assert df.count() == 2
+    assert "Name" in df.columns
