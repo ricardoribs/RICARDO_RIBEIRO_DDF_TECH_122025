@@ -1,161 +1,129 @@
-# Case Técnico Dadosfera – Engenharia de Dados
+# Olist Modern Data Platform
 
-![CI/CD Pipeline](https://github.com/ricardoribs/RICARDO_RIBEIRO_DDF_TECH_122025/actions/workflows/ci_cd.yml/badge.svg)
-![Stack](https://img.shields.io/badge/Stack-PySpark%20|%20WSL2%20|%20Streamlit-blue)
-![Architecture](https://img.shields.io/badge/Architecture-Medallion%20Lakehouse-orange)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
+![Orchestration](https://img.shields.io/badge/Orchestration-Prefect-blue)
+![Processing](https://img.shields.io/badge/Processing-PySpark%20|%20DuckDB-orange)
+![Transformation](https://img.shields.io/badge/Transformation-dbt-FF694B)
 
 **Autor:** Ricardo Ribeiro  
-**Data:** Dezembro/2025 (Atualizado em Jan/2026)  
-**Contexto:** Implementação de Plataforma de Dados End-to-End para E-commerce
+**Arquitetura:** Modern Data Stack (Lakehouse + Analytics Engineering)  
+**Ambiente:** WSL 2 (Linux)
 
 ---
 
-## Visão Geral e Evolução da Arquitetura
+## Visão Geral: De Scripts Locais para Plataforma Escalável
 
-Este projeto adota uma abordagem híbrida (**Modern Data Stack**). Inicialmente concebido com scripts Pandas e bancos relacionais, o projeto foi **migrado para uma Arquitetura Big Data** utilizando **Apache Spark (PySpark)** rodando em ambiente **Linux (WSL 2)**. 
+Este projeto simula um ambiente de **Engenharia de Dados Produtivo**, desenhado para resolver problemas reais de escalabilidade e governança. 
 
-O objetivo atual é simular um ambiente produtivo escalável, transformando dados brutos em um **Lakehouse (Medallion Architecture)**, cobrindo ingestão, schema enforcement, particionamento e analytics com IA.
+A arquitetura foi refatorada para seguir as melhores práticas de mercado, migrando de scripts monolíticos para uma abordagem modular e orquestrada.
 
 ---
 
-## Fase 0 – Planejamento
+## Navegação por Fases do Projeto
 
-**Objetivo:** Definir escopo, estrutura do repositório, metodologia ágil e riscos do projeto.
+Clique nos links abaixo para navegar pelos módulos e documentação específica de cada etapa.
 
-| ID | Atividade | Status | Entrega |
+| ID | Fase | Tecnologia | Onde está o código? |
 | :-- | :--- | :--- | :--- |
-| 00 | [Planejamento e Kanban](./00_planejamento/) | Concluído | Metodologia Ágil e Estrutura do Repositório |
+| **00** | **Planejamento** | Kanban / Agile | [📂 00_planejamento](./00_planejamento/) |
+| **01** | **Ingestão (Bronze)** | **PySpark** | [📂 src/etl](./src/README.md) |
+| **02** | **Refinamento (Silver)** | **PySpark** (Schema Enforcement) | [📂 src/etl](./src/README.md) |
+| **03** | **Analytics (Gold)** | **dbt + DuckDB** | [📂 olist_analytics](./olist_analytics/README.md) |
+| **04** | **Orquestração** | **Prefect** | [📂 src/orchestration](./src/README.md) |
+| **05** | **Data App & AI** | **Streamlit + GenAI** | [📂 09_data_app](./09_data_app/README.md) |
 
 ---
 
-## Fase 1 – Bronze (Ingestão Big Data)
+## Arquitetura da Solução
 
-**Objetivo:** Garantir aquisição, persistência e rastreabilidade dos dados brutos em formato otimizado.
-
-**Fonte:** Brazilian E-Commerce Public Dataset by Olist (>100k pedidos)
-
-| ID | Atividade | Status | Dependência |
-| :-- | :--- | :--- | :--- |
-| 01 | [Seleção e Aquisição da Base Olist](./01_base_dados/) | Concluído | 00 |
-| 02 | [Ingestão via PySpark (Lakehouse Local)](./08_pipelines/) | **Atualizado** | 01 |
-
----
-
-## Fase 2 – Silver (Refinamento e Schema)
-
-**Objetivo:** Garantir consistência, tipagem forte e particionamento dos dados para performance.
-
-| ID | Atividade | Status | Dependência |
-| :-- | :--- | :--- | :--- |
-| 03 | [Catalogação e Dicionário de Dados](./01_base_dados/dicionario_dados.md) | Concluído | 02 |
-| 04 | [Schema Enforcement & Limpeza (Spark)](./08_pipelines/) | **Atualizado** | 03 |
-| 05 | [GenAI – Enriquecimento via App](./09_data_app/) | Concluído | 01, 02 |
-
----
-
-## Fase 3 – Gold (Agregação e Consumo)
-
-**Objetivo:** Disponibilizar dados analíticos (KPIs) prontos para visualização e produtos de IA.
-
-| ID | Atividade | Status | Dependência |
-| :-- | :--- | :--- | :--- |
-| 06 | [Modelagem Dimensional e Agregação Spark](./08_pipelines/) | **Atualizado** | 04 |
-| 07 | [Dashboard Analítico Integrado (Streamlit)](./09_data_app/) | **Atualizado** | 06 |
-| 09 | [Data App – GenAI + Analytics](./09_data_app/) | Concluído | 07 |
-
----
-
-## Fase 4 – Automação e Infraestrutura
-
-**Objetivo:** Garantir execução em ambiente Linux (WSL) e orquestração de jobs Spark.
-
-| ID | Atividade | Status | Dependência |
-| :-- | :--- | :--- | :--- |
-| 08 | [Pipeline PySpark (Medallion Architecture)](./08_pipelines/) | **Atualizado** | 06 |
-
----
-
-## Testes Automatizados
-
-O projeto conta com uma suíte robusta de testes utilizando **pytest**, adaptada para validar sessões Spark e lógica de transformação:
-
-* **Unit Tests:** Verificam a lógica de agregação do PySpark.
-* **Ambiente:** Testes rodam em CI/CD instalando Java e Spark automaticamente.
-
-### Como executar
-
-```bash
-pytest tests/ -v
-```
-
----
-
-## Diagrama de Arquitetura (Lakehouse)
-O fluxo de dados segue uma arquitetura Medallion, com processamento distribuído via Spark no WSL, persistência em Parquet e consumo via Streamlit com integração de IA.
-
+O fluxo de dados segue a arquitetura **Medallion**, utilizando o princípio de *"Right Tool for the Job"* (Ferramenta Certa para o Trabalho).
 
 ```mermaid
-graph TD
-    classDef plan fill:#40e0d0,stroke:#333,stroke-width:2px,color:white;
-    classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:white;
-    classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:black;
-    classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:black;
+graph LR
+    subgraph Ingestão & Processamento [Spark & Prefect]
+        A[CSV Raw] -->|PySpark| B[(Bronze Layer)]
+        B -->|PySpark + Schema| C[(Silver Layer)]
+    end
 
-    %% Planejamento
-    P0["Planejamento & PMBOK: escopo, cronograma, riscos"]:::plan
+    subgraph Analytics Engineering [dbt & DuckDB]
+        C -->|DuckDB Read Parquet| D[dbt Transformation]
+        D -->|Materialization| E[(Gold Table)]
+    end
 
-    %% Ingestão Bronze
-    B1["Fonte Olist CSV - Dados brutos"]:::bronze
-    B2["PySpark Ingestion Bronze Layer"]:::bronze
-    P0 --> B1
-    B1 --> B2
-
-    %% Refinamento Silver
-    S1["Schema Enforcement - Validação de colunas/tipos"]:::silver
-    S2["Particionamento Ano/Mês"]:::silver
-    B2 --> S1
-    S1 --> S2
-
-    %% Consumo Gold
-    G1["KPIs Agregados Parquet"]:::gold
-    G2["Streamlit Dashboard"]:::gold
-    G3["GenAI Gemini + Stable Diffusion"]:::gold
-    S2 --> G1
-    G1 --> G2
-    G2 --> G3
+    subgraph Consumo
+        E --> F[Dashboard Analytics]
+        C --> G[GenAI Agents]
+    end
 ```
 
 ---
 
-* Observação: A infraestrutura foi migrada para Linux (WSL) para eliminar dependências de winutils e simular um cluster Spark real.
+## Detalhe das Camadas
+
+* Bronze (Raw - Spark): Ingestão fiel dos dados brutos em formato Parquet.
+
+*  Silver (Refined - Spark): Limpeza técnica, tipagem forte (StructType) e tratamento de nulos.
+
+* Gold (Aggregated - dbt): Regras de negócio, KPIs mensais e agregações complexas gerenciadas via SQL modular no dbt.
 
 ---
 
-## Tech Stack & Estrutura do Repositório
-* 00_planejamento/ – Metodologia ágil, Kanban e planejamento
+## Tech Stack
 
-* 01_base_dados/ – Datasets brutos (CSV)
+| Tecnologia            | Função         | Justificativa Arquitetural                                                                                                                                           |
+| --------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Prefect**           | Orquestração   | Orquestra fluxos ETL de forma observável, com logs, retries automáticos e controle de execução, substituindo scripts manuais ou cron jobs.                           |
+| **PySpark**           | Engine ETL     | Processamento distribuído e eficiente para grandes volumes de dados nas camadas **Bronze** e **Silver**, onde I/O e paralelismo são críticos.                        |
+| **dbt + DuckDB**      | Transformações | DuckDB permite leitura instantânea de arquivos Parquet sem overhead de JVM, enquanto o dbt adiciona versionamento, linhagem, testes e documentação ao SQL analítico. |
+| **WSL 2**             | Infraestrutura | Simula de forma fiel um ambiente Linux produtivo, mantendo compatibilidade com ferramentas modernas de dados no Windows.                                             |
+| **Streamlit + GenAI** | Aplicação      | Camada de consumo voltada ao usuário final, com visualização interativa e uso de agentes de IA (Gemini / Stable Diffusion) para ativação e exploração de dados.      |
 
-* 08_pipelines/ – CORE: Scripts PySpark (Bronze/Silver/Gold)
-
-* 09_data_app/ – Aplicação Streamlit com Dashboard e IA Generativa
-
-* 09_lakehouse/ – (Local) Estrutura de pastas do Data Lake
-
-* tests/ – Testes unitários para Spark
 
 ---
 
-## Análise de Riscos Mitigados
+## Como Executar o Projeto
+1. Setup do Ambiente
 
-* Escalabilidade: Migração de Pandas para Spark permite processar terabytes de dados.
+```Bash
+# Clone o repositório
+git clone [https://github.com/ricardoribs/RICARDO_RIBEIRO_DDF_TECH_122025.git](https://github.com/ricardoribs/RICARDO_RIBEIRO_DDF_TECH_122025.git)
+```
 
-* Rate Limit de API (GenAI): Implementado sistema de Fallback (Gemini -> Prompt Manual -> Hugging Face) para garantir resiliência.
+# Instale as dependências
+pip install -r requirements.txt
 
-* Segurança: Uso de .gitignore rigoroso para evitar vazamento de dados do Lakehouse
+2. Iniciar o Orquestrador (Prefect)
+Em um terminal, inicie o servidor local para visualizar os fluxos:
+
+```Bash
+prefect server start
+# Acesse [http://127.0.0.1:4200](http://127.0.0.1:4200)´
+```
+3. Rodar o Pipeline de Dados (Bronze & Silver)
+Em outro terminal, execute o fluxo:
+
+```Bash
+# Configura o cliente para o servidor local
+prefect config set PREFECT_API_URL=[http://127.0.0.1:4200/api](http://127.0.0.1:4200/api)
+
+# Roda a ingestão Spark
+python3 src/orchestration/flow_main.py
+```
+
+4. Rodar a Camada de Analytics (Gold - dbt)
+```Bash
+cd olist_analytics
+dbt run --profiles-dir .
+```
 
 ---
 
-<div align="center"> <h3>Desenvolvido por Ricardo Ribeiro</h3> <p>Case Técnico Dadosfera • Dezembro/2025 • Atualizado Jan/2026</p> </div>
+## Evidências de Execução
+Orquestração com Prefect (Sucesso)
+
+Transformação com dbt
+
 
 ---
+
+<div align="center"> <h3>Desenvolvido por Ricardo Ribeiro</h3> <p>Engenharia de Dados Sênior • Modern Data Stack</p> </div>

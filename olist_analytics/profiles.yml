@@ -1,0 +1,8 @@
+olist_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'olist_gold.duckdb' # Arquivo local do banco
+      extensions:
+        - parquet

@@ -1,20 +1,28 @@
-# 📱 Item 9 - Data App (Streamlit)
+```markdown
+# Olist Data App & GenAI Agents
 
-Dashboard interativo desenvolvido em Python para exploração dinâmica dos dados de vendas do Olist.
+Interface visual para consumo de dados e interação com Agentes de Inteligência Artificial.
+
+## Stack Tecnológica
+* **Frontend:** Streamlit
+* **Visualização:** Plotly
+* **GenAI:** Google Gemini (Texto/Prompting) + Hugging Face (Geração de Imagens)
+
+## Funcionalidades
+1.  **Analytics Dashboard:** Consome dados agregados da camada Gold (gerada pelo dbt).
+2.  **Marketing Generator:** Agentes de IA que criam descrições e imagens de anúncios baseados nos dados dos produtos.
 
 ## Como Executar
 
-1. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
+```bash
+streamlit run app.py
+```
 
-2. Instale as dependências:
-   ```bash
-   streamlit run app.py
+---
 
-## Funcionalidades
-• KPIs em Tempo Real: Receita, Pedidos e Ticket Médio calculados na hora.
+## Resiliência (GenAI)
+O aplicativo possui sistema de Fallback:
+* Se a API do Gemini falhar (cota/erro), um prompt de contingência é usado.
 
-• Filtros Dinâmicos: Seleção de período via sidebar.
+* Se o modelo de imagem falhar, o sistema tenta um modelo secundário mais leve.
 
-• Visualização Interativa: Gráficos Plotly com zoom e tooltips.
