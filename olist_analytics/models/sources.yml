@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: lakehouse
+    description: "Dados processados pelo Spark (Camada Silver)"
+    loader: "PySpark"
+    tables:
+      - name: order_items
+        description: "Itens dos pedidos tratados e tipados"
+        # O dbt não valida esse external_location automaticamente no DuckDB community,
+        # mas documenta de onde vem.
+        meta:
+          external_location: "{{ var('lakehouse_path') }}/silver/order_items/*.parquet"

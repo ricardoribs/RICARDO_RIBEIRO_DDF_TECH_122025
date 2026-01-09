@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Serviço 1: O Cérebro (UI do Prefect)
+  prefect-server:
+    image: prefecthq/prefect:2-latest
+    container_name: olist_prefect_server
+    entrypoint: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect_data:/root/.prefect
+
+  # Serviço 2: O Operário (Seu Pipeline Spark + IA)
+  etl-job:
+    build: .
+    container_name: olist_etl_runner
+    depends_on:
+      - prefect-server
+    volumes:
+      # Mapeamos as pastas locais para você ver os arquivos sendo gerados no seu Windows
+      - ./09_lakehouse:/app/09_lakehouse
+      - ./olist_analytics:/app/olist_analytics
+      - ./src:/app/src
+    env_file:
+      - .env  # Passa a sua GOOGLE_API_KEY automaticamente
+    environment:
+      # Aponta para o servidor Prefect rodando no outro container
+      - PREFECT_API_URL=http://prefect-server:4200/api
+    # [CORREÇÃO] Sleep aumentado para 30s para evitar "Connection Refused" na inicialização
+    command: >
+      bash -c "echo '⏳ Esperando 30s pelo Prefect Server iniciar...' && sleep 30 && 
+               echo '🚀 Rodando Pipeline Spark (Bronze -> Silver -> Gold + AI)...' && 
+               python src/orchestration/flow_main.py && 
+               echo '📊 Rodando dbt (Analytics)...' && 
+               cd olist_analytics && dbt run --profiles-dir ."
+
+volumes:
+  prefect_data:

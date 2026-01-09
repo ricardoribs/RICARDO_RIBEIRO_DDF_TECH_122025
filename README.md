@@ -9,6 +9,19 @@
 **Arquitetura:** Modern Data Stack (Lakehouse + Analytics Engineering)  
 **Ambiente:** WSL 2 (Linux)
 
+## Quick Start (Docker)
+A maneira mais rápida de rodar o projeto completo (Infra + Pipeline + App) é utilizando Docker. Isso garante que todas as dependências (Java, Spark, Python) estejam isoladas.
+
+### Pré-requisitos
+* Docker e Docker Compose instalados.
+* Uma chave de API do Google Gemini no arquivo `.env`.
+
+### Como rodar
+```bash
+# 1. Construa e suba os containers
+docker-compose up --build
+```
+
 ---
 
 ## Visão Geral: De Scripts Locais para Plataforma Escalável

@@ -34,3 +34,6 @@ models:
     # Config indicated by + and applies to all files under models/example/
     example:
       +materialized: view
+vars:
+  # Definimos o caminho do Lakehouse aqui. Se mudar a pasta amanhã, só muda aqui.
+  lakehouse_path: '../09_lakehouse'
