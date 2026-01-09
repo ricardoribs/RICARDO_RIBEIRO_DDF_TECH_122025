@@ -10,29 +10,39 @@ services:
       - "4200:4200"
     volumes:
       - prefect_data:/root/.prefect
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import requests; requests.get('http://localhost:4200/api/health').raise_for_status()"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  # Serviço 2: O Operário (Seu Pipeline Spark + IA)
+  # Serviço 2: O Operário (Seu Pipeline)
   etl-job:
     build: .
     container_name: olist_etl_runner
     depends_on:
-      - prefect-server
+      prefect-server:
+        condition: service_healthy
     volumes:
-      # Mapeamos as pastas locais para você ver os arquivos sendo gerados no seu Windows
       - ./09_lakehouse:/app/09_lakehouse
       - ./olist_analytics:/app/olist_analytics
       - ./src:/app/src
     env_file:
-      - .env  # Passa a sua GOOGLE_API_KEY automaticamente
+      - .env
     environment:
-      # Aponta para o servidor Prefect rodando no outro container
       - PREFECT_API_URL=http://prefect-server:4200/api
-    # [CORREÇÃO] Sleep aumentado para 30s para evitar "Connection Refused" na inicialização
+      - PYTHONPATH=/app
     command: >
-      bash -c "echo '⏳ Esperando 30s pelo Prefect Server iniciar...' && sleep 30 && 
-               echo '🚀 Rodando Pipeline Spark (Bronze -> Silver -> Gold + AI)...' && 
+      bash -c "echo '✅ Prefect Server está Healthy! Iniciando...' && 
                python src/orchestration/flow_main.py && 
-               echo '📊 Rodando dbt (Analytics)...' && 
+               echo '📊 Rodando dbt...' && 
                cd olist_analytics && dbt run --profiles-dir ."
 
 volumes:

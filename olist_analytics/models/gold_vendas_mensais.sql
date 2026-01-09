@@ -1,12 +1,7 @@
 {{ config(materialized='table') }}
 
 with source_data as (
-    /* [CORREÇÃO SÊNIOR] 
-       Substituímos o caminho manual por uma variável dbt (var).
-       Isso centraliza a configuração: se a pasta mudar, 
-       só precisamos alterar no dbt_project.yml.
-    */
-    select * from read_parquet('{{ var("lakehouse_path") }}/silver/order_items/*.parquet')
+    select * from {{ source('lakehouse', 'order_items') }}
 )
 
 select
