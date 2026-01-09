@@ -21,6 +21,16 @@ A maneira mais rápida de rodar o projeto completo (Infra + Pipeline + App) é u
 # 1. Construa e suba os containers
 docker-compose up --build
 ```
+## O que vai acontecer?
+
+1. O servidor do Prefect subirá na porta 4200.
+
+2. O job de ETL aguardará o servidor e iniciará o fluxo:
+
+* Ingestão Bronze & Silver (Spark)
+* Quality Gates (Great Expectations)
+* Enriquecimento com IA (Gemini 2.5)
+* Transformação Analytics (dbt)
 
 ---
 
