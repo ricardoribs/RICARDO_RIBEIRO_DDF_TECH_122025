@@ -3,6 +3,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, col, lit
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType, TimestampType
 import google.generativeai as genai
+import great_expectations as gx
 import os
 
 # [IMPORTANTE] Importando as configurações centralizadas
@@ -77,27 +78,73 @@ def process_silver():
     df_clean.write.mode("overwrite").parquet(str(output_path))
     logger.info("✅ Silver atualizada com sucesso.")
 
-@task(name="3. Quality Gate (Validation)", log_prints=True)
+@task(name="3. Quality Gate (GX)", log_prints=True)
 def validate_silver():
     """
-    [WAP Pattern] Quality Gate: Bloqueia dados ruins de chegarem na Gold.
+    [Enterprise] Validação de Dados com Great Expectations.
+    Define regras de negócio e bloqueia o pipeline se os dados estiverem ruins.
     """
     logger = get_run_logger()
     spark = get_spark_session()
-    logger.info("🛡️ Executando validação de qualidade de dados...")
     
     silver_path = settings.LAKEHOUSE_DIR / "silver" / "order_items"
-    df = spark.read.parquet(str(silver_path))
+    logger.info(f"🛡️ Iniciando Great Expectations na camada: {silver_path}")
     
-    # Regra de Negócio: Preço não pode ser negativo
-    invalid_price_count = df.filter(col("price") < 0).count()
+    # 1. Carregar dados (Spark -> Pandas para validação ágil no GX)
+    df_spark = spark.read.parquet(str(silver_path))
+    df_pandas = df_spark.toPandas()
     
-    if invalid_price_count > 0:
-        msg = f"❌ FALHA NO QUALITY GATE: Encontrados {invalid_price_count} itens com preço negativo."
-        logger.error(msg)
-        raise ValueError(msg)
+    # 2. Inicializar Contexto do GX (Em memória)
+    context = gx.get_context()
     
-    logger.info("✅ Quality Gate Aprovado: Integridade dos dados 100%.")
+    # 3. Criar Datasource e Asset
+    datasource_name = "spark_silver_data"
+    data_asset_name = "order_items"
+    
+    datasource = context.sources.add_pandas(datasource_name)
+    asset = datasource.add_dataframe_asset(name=data_asset_name, dataframe=df_pandas)
+    
+    # 4. Definir Expectativas (Regras de Qualidade)
+    suite_name = "silver_quality_gate"
+    context.add_or_update_expectation_suite(expectation_suite_name=suite_name)
+    
+    batch_request = asset.build_batch_request()
+    validator = context.get_validator(
+        batch_request=batch_request,
+        expectation_suite_name=suite_name
+    )
+    
+    logger.info("📐 Aplicando regras de validação...")
+    
+    # Regra 1: Preço deve ser positivo e razoável
+    validator.expect_column_values_to_be_between(
+        column="price", min_value=0.01, max_value=1000000
+    )
+    
+    # Regra 2: Order ID e Product ID não podem ser nulos
+    validator.expect_column_values_to_not_be_null(column="order_id")
+    validator.expect_column_values_to_not_be_null(column="product_id")
+    
+    # Regra 3: Frete não pode ser negativo
+    validator.expect_column_values_to_be_between(
+        column="freight_value", min_value=0
+    )
+
+    # 5. Executar Validação
+    checkpoint = context.add_or_update_checkpoint(
+        name="silver_checkpoint",
+        validator=validator,
+    )
+    
+    checkpoint_result = checkpoint.run()
+    
+    # 6. Avaliar Sucesso/Frasso
+    if not checkpoint_result.success:
+        logger.error("❌ FALHA CRÍTICA: Great Expectations encontrou erros nos dados!")
+        # Dica: O relatório HTML fica salvo na pasta 'gx/' dentro do container/volume
+        raise ValueError("Data Quality Check Failed! Pipeline interrompido.")
+    
+    logger.info("✅ Quality Gate Aprovado! Integridade Enterprise Garantida.")
 
 @task(name="4. AI Enrichment (Gemini)", log_prints=True)
 def enrich_products_ai():
@@ -116,18 +163,17 @@ def enrich_products_ai():
     
     # Configuração da API
     genai.configure(api_key=settings.GOOGLE_API_KEY)
-    # [MODELO ATUALIZADO] Usando versão flash para velocidade
+    # [MODELO ATUALIZADO] Usando versão flash para velocidade e disponibilidade
     model = genai.GenerativeModel('gemini-2.5-flash')
     
     # Lê dados da Silver
     silver_path = settings.LAKEHOUSE_DIR / "silver" / "order_items"
     df = spark.read.parquet(str(silver_path))
     
-    # [NOTA DE ARQUITETURA / DEFESA TÉCNICA]
-    # Utilizamos .collect() + Loop Python aqui conscientemente.
-    # Motivo: A API Free Tier do Gemini possui Rate Limit (RPM).
-    # O uso de Spark UDFs distribuídos causaria erro 429 (Too Many Requests) imediato.
-    # Em produção (Enterprise Tier), usaríamos mapInPandas com micro-batching.
+    # [DEFESA TÉCNICA - RATE LIMITING]
+    # Utilizamos .collect() + Loop Python propositalmente para respeitar o 
+    # limite de RPM (Requests Per Minute) da API Gratuita do Gemini.
+    # Em produção (Enterprise Tier), a abordagem correta seria Spark Pandas UDF.
     unique_products = df.select("product_id", "price").distinct().limit(5).collect()
     
     ai_results = []
@@ -172,7 +218,11 @@ def main_flow():
     # Execução Sequencial das Tarefas
     ingest_bronze()
     process_silver()
+    
+    # O Quality Gate agora é uma barreira real
     validate_silver()
+    
+    # Só roda se a qualidade passar
     enrich_products_ai()
     
     logger.info("🏁 Pipeline Finalizado com Sucesso!")

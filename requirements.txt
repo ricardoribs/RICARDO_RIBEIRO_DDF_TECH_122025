@@ -7,9 +7,8 @@ huggingface_hub
 python-dotenv
 prefect>=2.19.0,<3.0.0
 dbt-duckdb>=1.6.0
-great_expectations
+great_expectations==0.18.19
 duckdb
-pytest
 pytest>=7.0.0
 pylint>=3.0.0
 sqlfluff>=2.0.0

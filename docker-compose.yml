@@ -1,49 +1,84 @@
 version: '3.8'
 
 services:
-  # Serviço 1: O Cérebro (UI do Prefect)
+  # 1. Banco de Dados Postgres
+  postgres:
+    image: postgres:15-alpine
+    container_name: olist_prefect_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prefect
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # 2. O Cérebro (Prefect Server)
   prefect-server:
     image: prefecthq/prefect:2-latest
     container_name: olist_prefect_server
     entrypoint: ["prefect", "server", "start", "--host", "0.0.0.0"]
     ports:
       - "4200:4200"
-    volumes:
-      - prefect_data:/root/.prefect
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
+      - PREFECT_API_URL=http://0.0.0.0:4200/api
     healthcheck:
-      test:
-        [
-          "CMD",
-          "python",
-          "-c",
-          "import requests; requests.get('http://localhost:4200/api/health').raise_for_status()"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:4200/api/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 300s 
 
-  # Serviço 2: O Operário (Seu Pipeline)
+  # 3. O Operário (Pipeline ETL)
   etl-job:
     build: .
     container_name: olist_etl_runner
     depends_on:
-      prefect-server:
-        condition: service_healthy
+      - prefect-server
     volumes:
+      - ./01_base_dados:/app/01_base_dados
       - ./09_lakehouse:/app/09_lakehouse
-      - ./olist_analytics:/app/olist_analytics
       - ./src:/app/src
+      - ./olist_analytics:/app/olist_analytics
+      - ./docs:/app/docs
     env_file:
       - .env
     environment:
       - PREFECT_API_URL=http://prefect-server:4200/api
       - PYTHONPATH=/app
     command: >
-      bash -c "echo '✅ Prefect Server está Healthy! Iniciando...' && 
+      bash -c "echo '⏳ Aguardando 40s para o Server subir...' && 
+               sleep 40 && 
+               echo '🚀 Iniciando Pipeline...' && 
                python src/orchestration/flow_main.py && 
                echo '📊 Rodando dbt...' && 
                cd olist_analytics && dbt run --profiles-dir ."
 
+  # 4. [NOVO] O Dashboard (Streamlit)
+  dashboard:
+    image: ricardo_ribeiro_ddf_tech_122025-etl-job:latest # Reusa a imagem do ETL
+    container_name: olist_dashboard
+    restart: always # Se cair, levanta de novo
+    ports:
+      - "8501:8501" # Porta do Streamlit
+    volumes:
+      - ./09_lakehouse:/app/09_lakehouse # Lê os dados gerados
+      - ./src:/app/src # Lê o código do app
+    environment:
+      - PYTHONPATH=/app
+    # Comando para rodar o app e expor para a rede
+    command: streamlit run src/app/dashboard.py --server.address=0.0.0.0
+
 volumes:
   prefect_data:
+  postgres_data:
