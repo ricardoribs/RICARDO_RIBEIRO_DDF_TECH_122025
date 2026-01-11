@@ -1,7 +1,9 @@
 {{ config(materialized='table') }}
 
 with source_data as (
-    select * from {{ source('lakehouse', 'order_items') }}
+    -- Usa leitura direta do parquet via DuckDB
+    -- A variavel lakehouse_path deve ser passada via CLI ou profiles
+    select * from read_parquet('{{ var("lakehouse_path") }}/silver/order_items/*.parquet')
 )
 
 select

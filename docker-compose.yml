@@ -1,85 +1,28 @@
 version: '3.8'
 
 services:
-  # 1. Banco de Dados Postgres (Blindado contra travamentos)
-  postgres:
-    image: postgres:15-alpine
-    container_name: olist_prefect_db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=prefect
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    ports:
-      - "5432:5432"
-
-  # 2. O Cérebro (Prefect Server)
-  prefect-server:
-    image: prefecthq/prefect:2-latest
-    container_name: olist_prefect_server
-    entrypoint: ["prefect", "server", "start", "--host", "0.0.0.0"]
-    ports:
-      - "4200:4200"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
-      - PREFECT_API_URL=http://0.0.0.0:4200/api
-    # Healthcheck paciente para migrações iniciais
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:4200/api/health"]
-      interval: 20s
-      timeout: 10s
-      retries: 15
-      start_period: 300s 
-
-  # 3. O Operário (Pipeline ETL)
-  etl-job:
+  etl-pipeline:
     build: .
-    container_name: olist_etl_runner
-    depends_on:
-      - prefect-server
+    container_name: dadosfera_etl
     volumes:
-      - ./01_base_dados:/app/01_base_dados
-      - ./09_lakehouse:/app/09_lakehouse
-      - ./src:/app/src
-      - ./olist_analytics:/app/olist_analytics
-      - ./docs:/app/docs
-    env_file:
-      - .env
+      - .:/app
     environment:
-      - PREFECT_API_URL=http://prefect-server:4200/api
-      - PYTHONPATH=/app
-    # Comando ÚNICO e LIMPO
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - PREFECT_API_URL=${PREFECT_API_URL}
+    # Comando robusto que aguarda e executa
     command: >
-      bash -c "echo '⏳ Aguardando 40s para o Server subir...' && 
-               sleep 40 && 
-               echo '🚀 Iniciando Pipeline...' && 
-               python src/orchestration/flow_main.py && 
-               echo '📊 Rodando dbt...' && 
-               cd olist_analytics && dbt run --profiles-dir ."
+      bash -c "echo '⏳ Iniciando Pipeline...' && 
+               python src/orchestration/flow_main.py"
 
-  # 4. O Dashboard (Streamlit)
   dashboard:
-    image: ricardo_ribeiro_ddf_tech_122025-etl-job:latest
+    build: . 
     container_name: olist_dashboard
-    restart: always
     ports:
       - "8501:8501"
     volumes:
-      - ./09_lakehouse:/app/09_lakehouse
-      - ./src:/app/src
+      - .:/app
     environment:
-      - PYTHONPATH=/app
-    command: streamlit run src/app/dashboard.py --server.address=0.0.0.0
-
-volumes:
-  prefect_data:
-  postgres_data:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    command: streamlit run src/app/dashboard.py
+    depends_on:
+      - etl-pipeline
