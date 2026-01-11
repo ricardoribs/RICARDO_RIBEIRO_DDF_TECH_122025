@@ -3,7 +3,6 @@ from src.etl.bronze_ingestion import BronzeIngestor
 from src.etl.silver_cleaning import SilverCleaner
 from src.config import settings
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
 import google.generativeai as genai
 import great_expectations as gx
 import os
