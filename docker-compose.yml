@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. Banco de Dados Postgres
+  # 1. Banco de Dados Postgres (Blindado contra travamentos)
   postgres:
     image: postgres:15-alpine
     container_name: olist_prefect_db
@@ -32,6 +32,7 @@ services:
     environment:
       - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
       - PREFECT_API_URL=http://0.0.0.0:4200/api
+    # Healthcheck paciente para migrações iniciais
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:4200/api/health"]
       interval: 20s
@@ -56,6 +57,7 @@ services:
     environment:
       - PREFECT_API_URL=http://prefect-server:4200/api
       - PYTHONPATH=/app
+    # Comando ÚNICO e LIMPO
     command: >
       bash -c "echo '⏳ Aguardando 40s para o Server subir...' && 
                sleep 40 && 
@@ -64,19 +66,18 @@ services:
                echo '📊 Rodando dbt...' && 
                cd olist_analytics && dbt run --profiles-dir ."
 
-  # 4. [NOVO] O Dashboard (Streamlit)
+  # 4. O Dashboard (Streamlit)
   dashboard:
-    image: ricardo_ribeiro_ddf_tech_122025-etl-job:latest # Reusa a imagem do ETL
+    image: ricardo_ribeiro_ddf_tech_122025-etl-job:latest
     container_name: olist_dashboard
-    restart: always # Se cair, levanta de novo
+    restart: always
     ports:
-      - "8501:8501" # Porta do Streamlit
+      - "8501:8501"
     volumes:
-      - ./09_lakehouse:/app/09_lakehouse # Lê os dados gerados
-      - ./src:/app/src # Lê o código do app
+      - ./09_lakehouse:/app/09_lakehouse
+      - ./src:/app/src
     environment:
       - PYTHONPATH=/app
-    # Comando para rodar o app e expor para a rede
     command: streamlit run src/app/dashboard.py --server.address=0.0.0.0
 
 volumes:
