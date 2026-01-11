@@ -6,9 +6,7 @@ from pathlib import Path
 # Page config
 # =====================================================
 st.set_page_config(
-    page_title="Olist Analytics",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Olist Analytics", layout="wide", initial_sidebar_state="expanded"
 )
 
 # =====================================================
@@ -34,6 +32,7 @@ if missing:
     st.code("\n".join(missing))
     st.stop()
 
+
 # =====================================================
 # Load data
 # =====================================================
@@ -44,20 +43,20 @@ def load_data():
 
     # Garantia de datetime
     if "order_purchase_timestamp" not in orders.columns:
-        raise ValueError("Column 'order_purchase_timestamp' not found in orders dataset")
+        raise ValueError(
+            "Column 'order_purchase_timestamp' not found in orders dataset"
+        )
 
     orders["order_purchase_timestamp"] = pd.to_datetime(
-        orders["order_purchase_timestamp"],
-        errors="coerce"
+        orders["order_purchase_timestamp"], errors="coerce"
     )
 
     df = items.merge(
-        orders[["order_id", "order_purchase_timestamp"]],
-        on="order_id",
-        how="left"
+        orders[["order_id", "order_purchase_timestamp"]], on="order_id", how="left"
     )
 
     return df
+
 
 df = load_data()
 
@@ -68,20 +67,10 @@ with st.sidebar:
     st.markdown("## Filters")
 
     # ---------- YEAR ----------
-    years = (
-        df["order_purchase_timestamp"]
-        .dropna()
-        .dt.year
-        .astype(int)
-        .unique()
-    )
+    years = df["order_purchase_timestamp"].dropna().dt.year.astype(int).unique()
 
     if len(years) > 1:
-        selected_year = st.selectbox(
-            "Year",
-            sorted(years),
-            index=len(years) - 1
-        )
+        selected_year = st.selectbox("Year", sorted(years), index=len(years) - 1)
     else:
         selected_year = years[0]
         st.caption(f"Year: {selected_year}")
@@ -92,14 +81,11 @@ with st.sidebar:
         .sum()
         .sort_values(ascending=False)
         .head(20)
-        .index
-        .tolist()
+        .index.tolist()
     )
 
     selected_products = st.multiselect(
-        "Products (Top revenue)",
-        options=top_products,
-        default=top_products[:5]
+        "Products (Top revenue)", options=top_products, default=top_products[:5]
     )
 
 
@@ -115,30 +101,18 @@ df_filtered = df[
 # Header
 # =====================================================
 st.markdown("## Olist Analytics")
-st.caption(
-    f"Year: {selected_year} • "
-    f"Orders: {df_filtered['order_id'].nunique():,}"
-)
+st.caption(f"Year: {selected_year} • Orders: {df_filtered['order_id'].nunique():,}")
 
 # =====================================================
 # KPIs
 # =====================================================
 c1, c2, c3 = st.columns(3)
 
-c1.metric(
-    "Total Revenue",
-    f"${df_filtered['price'].sum():,.2f}"
-)
+c1.metric("Total Revenue", f"${df_filtered['price'].sum():,.2f}")
 
-c2.metric(
-    "Average Item Price",
-    f"${df_filtered['price'].mean():,.2f}"
-)
+c2.metric("Average Item Price", f"${df_filtered['price'].mean():,.2f}")
 
-c3.metric(
-    "Items Sold",
-    f"{len(df_filtered):,}"
-)
+c3.metric("Items Sold", f"{len(df_filtered):,}")
 
 # =====================================================
 # Charts
@@ -146,18 +120,12 @@ c3.metric(
 st.markdown("### Revenue by Product")
 
 revenue = (
-    df_filtered
-    .groupby("product_id", as_index=False)["price"]
+    df_filtered.groupby("product_id", as_index=False)["price"]
     .sum()
     .sort_values("price", ascending=False)
 )
 
-st.bar_chart(
-    revenue,
-    x="product_id",
-    y="price",
-    use_container_width=True
-)
+st.bar_chart(revenue, x="product_id", y="price", use_container_width=True)
 
 # =====================================================
 # Data preview
