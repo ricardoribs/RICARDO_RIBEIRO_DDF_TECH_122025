@@ -1,21 +1,15 @@
 [sqlfluff]
+# Dialeto do nosso banco (DuckDB)
 dialect = duckdb
-templater = dbt
-run_away_limit = 10
-max_line_length = 120
-indent_unit = space
-# Ignora arquivos compilados ou temporários
+# Mudamos de 'dbt' para 'jinja' para passar no CI sem precisar do plugin pesado
+templater = jinja
+# Ignorar arquivos compilados ou temporários
 exclude_rules = L031
+max_line_length = 120
 
-[sqlfluff:indentation]
-tab_space_size = 4
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
 
-[sqlfluff:rules]
-allow_scalar = True
-
-# [CORREÇÃO] Configuração do dbt Templater
-# Diz ao SQLFluff onde encontrar o dbt_project.yml e o profiles.yml
-[sqlfluff:templater:dbt]
-project_dir = olist_analytics
-profiles_dir = olist_analytics
-target = dev
+# Ignora pastas de cache do dbt
+[sqlfluff:directories]
+exclude_dirs = olist_analytics/dbt_packages, olist_analytics/target
