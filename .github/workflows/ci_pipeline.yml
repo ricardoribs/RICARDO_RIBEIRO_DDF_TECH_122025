@@ -11,25 +11,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
     - name: Instalar Python 3.10
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
-    # Adicionado Java para o Spark funcionar nos testes
+        
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
+        
     - name: Instalar Dependências
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        
     - name: Rodar Linting (Ruff)
       run: ruff check src/
+      
+    # NOVO PASSO: Criar pastas fakes para o Pydantic não reclamar
+    - name: Criar Diretórios para Teste
+      run: |
+        mkdir -p 01_base_dados
+        mkdir -p 09_lakehouse/bronze
+        mkdir -p 09_lakehouse/silver
+        mkdir -p 09_lakehouse/gold
+
     - name: Rodar Testes Unitários
       env:
         PYTHONPATH: ${{ github.workspace }}
+        # Variáveis Fakes para enganar o Pydantic Settings
+        GOOGLE_API_KEY: "dummy_key_for_testing"
+        RAW_DATA_DIR: "./01_base_dados"
+        LAKEHOUSE_DIR: "./09_lakehouse"
       run: pytest tests/ -v
 
   sql-quality:
