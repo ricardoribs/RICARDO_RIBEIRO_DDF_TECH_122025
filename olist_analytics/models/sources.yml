@@ -2,8 +2,16 @@ version: 2
 
 sources:
   - name: lakehouse
-    description: "Camada Silver do Data Lakehouse"
+    description: "Camada Silver do Data Lakehouse (Parquet Files)"
     loader: "Spark"
     tables:
       - name: order_items
         description: "Itens de pedidos processados na camada Silver"
+        meta:
+          external_location: "read_parquet('../02_data_lake/silver/order_items/*.parquet')"
+      
+      # ADICIONAMOS ESTA TABELA QUE FALTAVA
+      - name: orders_enriched
+        description: "Pedidos enriquecidos e deduplicados (Snapshot Silver)"
+        meta:
+          external_location: "read_parquet('../02_data_lake/silver/orders_enriched/*.parquet')"

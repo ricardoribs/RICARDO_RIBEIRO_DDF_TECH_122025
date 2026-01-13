@@ -6,7 +6,8 @@ WITH vendas_diarias AS (
         , COUNT(DISTINCT order_id) AS total_pedidos
         , SUM(price) AS receita_total
         , AVG(price) AS ticket_medio
-    FROM {{ ref('orders_enriched') }}
+    -- CORREÇÃO: Usamos source() pois estamos lendo do Data Lake (Parquet), não de outro modelo dbt
+    FROM {{ source('lakehouse', 'orders_enriched') }}
     WHERE order_status = 'delivered'
     GROUP BY 1
 )
