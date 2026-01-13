@@ -8,7 +8,7 @@ with vendas_diarias as (
         , avg(price) as ticket_medio
     from {{ source('lakehouse', 'orders_enriched') }}
     where order_status = 'delivered'
-    group by 1
+    group by mes_referencia
 )
 
 select * from vendas_diarias
