@@ -1,0 +1,63 @@
+name: Olist Data Pipeline CI
+
+# Gatilho: Roda em qualquer push na main ou Pull Requests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Qualidade de Código Python (Testes e Lint)
+  python-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Baixar Código
+      uses: actions/checkout@v3
+
+    - name: Instalar Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Instalar Java (Necessário para o Spark)
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Instalar Dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Rodar Linting (Ruff)
+      # Verifica erros de sintaxe e estilo Python
+      run: |
+        ruff check src/
+
+    - name: Rodar Testes Unitários (Pytest)
+      # Roda os testes que criamos na pasta tests/
+      run: |
+        pytest tests/ -v
+
+  # Job 2: Qualidade de SQL (dbt Linting)
+  sql-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Instalar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Instalar SQLFluff e dbt
+      run: |
+        pip install sqlfluff dbt-duckdb
+
+    - name: Verificar Estilo do SQL (Lint)
+      # Analisa apenas os modelos dentro da pasta do dbt
+      run: |
+        sqlfluff lint olist_analytics/models --dialect duckdb

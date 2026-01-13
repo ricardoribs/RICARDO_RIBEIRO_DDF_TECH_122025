@@ -1,0 +1,11 @@
+olist_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'olist_gold.duckdb'
+      extensions:
+        - parquet
+      # Importante: Desabilitar proteção de threads para evitar travas no Docker
+      config_options:
+        allow_unsigned_extensions: true

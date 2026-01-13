@@ -1,0 +1,53 @@
+services:
+  # 1. SERVIDOR PREFECT ("Cérebro")
+  prefect-server:
+    platform: linux/amd64
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: olist_prefect_server
+    entrypoint: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect-data:/root/.prefect
+    restart: always
+
+  # 2. PIPELINE ETL ("Braço")
+  olist-pipeline:
+    platform: linux/amd64
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: olist_etl_worker
+    depends_on:
+      - prefect-server
+    
+    # --- PASSO 3: Carrega o arquivo de senhas ---
+    env_file:
+      - .env
+    
+    volumes:
+      - ./logs:/app/logs
+      - ./01_base_dados:/app/01_base_dados
+      - ./09_lakehouse:/app/09_lakehouse
+      - ./dbt_project/olist_analytics/olist_local.duckdb:/app/dbt_project/olist_analytics/olist_local.duckdb
+    
+    environment:
+      # --- Configuração de Diretórios (Para o Pydantic/Python) ---
+      # Força o Python a usar os caminhos internos do Linux
+      - BASE_DIR=/app
+      - RAW_DATA_DIR=/app/01_base_dados
+      - LAKEHOUSE_DIR=/app/09_lakehouse
+      
+      # --- Configuração do Prefect ---
+      - PREFECT_API_URL=http://prefect-server:4200/api
+      - PREFECT_SERVER_ANALYTICS_ENABLED=false
+      
+      # Nota: GOOGLE_API_KEY não precisa estar aqui, 
+      # ela já está sendo carregada pelo 'env_file' acima.
+    
+    restart: on-failure
+
+volumes:
+  prefect-data:

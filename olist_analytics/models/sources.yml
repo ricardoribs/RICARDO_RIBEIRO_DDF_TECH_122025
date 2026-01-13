@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: lakehouse
+    description: "Camada Silver do Data Lakehouse"
+    loader: "Spark"
+    tables:
+      - name: order_items
+        description: "Itens de pedidos processados na camada Silver"

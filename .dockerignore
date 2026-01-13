@@ -1,0 +1,26 @@
+# Dados Gigantes (Não copiar para a imagem!)
+01_base_dados/
+09_lakehouse/
+data_lake/
+spark-warehouse/
+metastore_db/
+
+# Git e Ambientes Virtuais
+.git/
+.gitignore
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Logs e Temporários
+logs/
+target/
+dbt_packages/
+*.log
+*.duckdb
+*.duckdb.wal
+
+# Documentação
+docs/

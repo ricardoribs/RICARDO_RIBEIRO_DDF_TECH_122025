@@ -1,0 +1,12 @@
+{
+  "type": "struct",
+  "fields": [
+    {"name": "order_id", "type": "string", "nullable": false, "metadata": {}},
+    {"name": "order_item_id", "type": "integer", "nullable": false, "metadata": {}},
+    {"name": "product_id", "type": "string", "nullable": true, "metadata": {}},
+    {"name": "seller_id", "type": "string", "nullable": true, "metadata": {}},
+    {"name": "shipping_limit_date", "type": "timestamp", "nullable": true, "metadata": {}},
+    {"name": "price", "type": "double", "nullable": true, "metadata": {}},
+    {"name": "freight_value", "type": "float", "nullable": true, "metadata": {}}
+  ]
+}

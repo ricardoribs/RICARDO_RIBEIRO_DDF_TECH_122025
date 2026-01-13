@@ -1,0 +1,197 @@
+[
+  {
+    "product_id":"f714f2e04474e89e781961c52081a5a7",
+    "product_category_name":"esporte_lazer",
+    "product_name_lenght":54.0,
+    "product_description_lenght":1888.0,
+    "product_photos_qty":5.0,
+    "product_weight_g":400.0,
+    "product_length_cm":24.0,
+    "product_height_cm":11.0,
+    "product_width_cm":18.0,
+    "descricao_sintetica":"Categoria Original: esporte_lazer | Peso: 400.0g | Dimensões (CxLxA): 24.0x18.0x11.0 cm",
+    "categoria_normalizada":"esporte_lazer",
+    "tags":[
+      "esporte",
+      "lazer",
+      "atividade física",
+      "recreação",
+      "bem-estar",
+      "hobby"
+    ],
+    "publico_alvo":"Geral, entusiastas de esporte e lazer, pessoas ativas"
+  },
+  {
+    "product_id":"55b04296824029ae20bbeb3b200e69d0",
+    "product_category_name":"moveis_decoracao",
+    "product_name_lenght":54.0,
+    "product_description_lenght":785.0,
+    "product_photos_qty":6.0,
+    "product_weight_g":1300.0,
+    "product_length_cm":60.0,
+    "product_height_cm":12.0,
+    "product_width_cm":12.0,
+    "descricao_sintetica":"Categoria Original: moveis_decoracao | Peso: 1300.0g | Dimensões (CxLxA): 60.0x12.0x12.0 cm",
+    "categoria_normalizada":"Móveis e Decoração",
+    "tags":[
+      "móveis",
+      "decoração",
+      "casa",
+      "ambiente",
+      "lar",
+      "design de interiores",
+      "acessório para casa"
+    ],
+    "publico_alvo":"Adultos, proprietários de casas, pessoas interessadas em design de interiores e decoração"
+  },
+  {
+    "product_id":"9cfb1c6f5894c219e96a6ff54ba62cc8",
+    "product_category_name":"telefonia",
+    "product_name_lenght":60.0,
+    "product_description_lenght":505.0,
+    "product_photos_qty":4.0,
+    "product_weight_g":200.0,
+    "product_length_cm":18.0,
+    "product_height_cm":5.0,
+    "product_width_cm":13.0,
+    "descricao_sintetica":"Categoria Original: telefonia | Peso: 200.0g | Dimensões (CxLxA): 18.0x13.0x5.0 cm",
+    "categoria_normalizada":"telefonia",
+    "tags":[
+      "celular",
+      "smartphone",
+      "telefone",
+      "comunicacao",
+      "eletronico",
+      "dispositivo",
+      "portatil",
+      "leve",
+      "tecnologia"
+    ],
+    "publico_alvo":[
+      "consumidor geral",
+      "usuarios de celular",
+      "profissionais"
+    ]
+  },
+  {
+    "product_id":"b1c791ce2fd764b4aaea6b9064b224ac",
+    "product_category_name":"perfumaria",
+    "product_name_lenght":52.0,
+    "product_description_lenght":425.0,
+    "product_photos_qty":3.0,
+    "product_weight_g":400.0,
+    "product_length_cm":23.0,
+    "product_height_cm":8.0,
+    "product_width_cm":15.0,
+    "descricao_sintetica":"Categoria Original: perfumaria | Peso: 400.0g | Dimensões (CxLxA): 23.0x15.0x8.0 cm",
+    "categoria_normalizada":"Perfumaria",
+    "tags":[
+      "perfume",
+      "fragrancia",
+      "beleza",
+      "cuidados pessoais",
+      "cosmetico",
+      "presente"
+    ],
+    "publico_alvo":"adultos"
+  },
+  {
+    "product_id":"94974b8c613bc6fae9700e6c01f626ae",
+    "product_category_name":"papelaria",
+    "product_name_lenght":36.0,
+    "product_description_lenght":198.0,
+    "product_photos_qty":3.0,
+    "product_weight_g":225.0,
+    "product_length_cm":20.0,
+    "product_height_cm":6.0,
+    "product_width_cm":13.0,
+    "descricao_sintetica":"Categoria Original: papelaria | Peso: 225.0g | Dimensões (CxLxA): 20.0x13.0x6.0 cm",
+    "categoria_normalizada":"papelaria",
+    "tags":[
+      "escritório",
+      "material escolar",
+      "artigos de papelaria",
+      "acessórios"
+    ],
+    "publico_alvo":[
+      "estudantes",
+      "profissionais",
+      "escritório",
+      "uso diário"
+    ]
+  },
+  {
+    "product_id":"b1631003bdbc3b1e876f83a7d851d74a",
+    "product_category_name":"perfumaria",
+    "product_name_lenght":48.0,
+    "product_description_lenght":1003.0,
+    "product_photos_qty":4.0,
+    "product_weight_g":350.0,
+    "product_length_cm":18.0,
+    "product_height_cm":11.0,
+    "product_width_cm":20.0,
+    "descricao_sintetica":"Categoria Original: perfumaria | Peso: 350.0g | Dimensões (CxLxA): 18.0x20.0x11.0 cm",
+    "categoria_normalizada":"Perfumaria",
+    "tags":[
+      "perfume",
+      "fragrancia",
+      "beleza",
+      "cosmeticos",
+      "cuidados_pessoais"
+    ],
+    "publico_alvo":"adultos"
+  },
+  {
+    "product_id":"c1ed7eeb2ac3e40d069da245ac1d3492",
+    "product_category_name":"cama_mesa_banho",
+    "product_name_lenght":53.0,
+    "product_description_lenght":502.0,
+    "product_photos_qty":1.0,
+    "product_weight_g":2250.0,
+    "product_length_cm":25.0,
+    "product_height_cm":25.0,
+    "product_width_cm":25.0,
+    "descricao_sintetica":"Categoria Original: cama_mesa_banho | Peso: 2250.0g | Dimensões (CxLxA): 25.0x25.0x25.0 cm",
+    "categoria_normalizada":"Cama, Mesa e Banho",
+    "tags":[
+      "cama",
+      "mesa",
+      "banho",
+      "casa",
+      "decoracao",
+      "enxoval",
+      "lar",
+      "textil"
+    ],
+    "publico_alvo":[
+      "adultos",
+      "familias",
+      "donas de casa",
+      "noivos",
+      "presentes",
+      "decoradores"
+    ]
+  },
+  {
+    "product_id":"9538a4d0d20e31d209def88993f8dca3",
+    "product_category_name":"moveis_decoracao",
+    "product_name_lenght":35.0,
+    "product_description_lenght":781.0,
+    "product_photos_qty":2.0,
+    "product_weight_g":300.0,
+    "product_length_cm":17.0,
+    "product_height_cm":4.0,
+    "product_width_cm":12.0,
+    "descricao_sintetica":"Categoria Original: moveis_decoracao | Peso: 300.0g | Dimensões (CxLxA): 17.0x12.0x4.0 cm",
+    "categoria_normalizada":"Decoração para Casa",
+    "tags":[
+      "decoração",
+      "casa",
+      "design de interiores",
+      "objeto decorativo",
+      "ambiente",
+      "presente para casa"
+    ],
+    "publico_alvo":"Pessoas interessadas em decoração e design de interiores, donos de casa e apartamentos, ou indivíduos buscando presentes para o lar."
+  }
+]

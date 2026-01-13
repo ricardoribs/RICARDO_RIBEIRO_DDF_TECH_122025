@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: lakehouse
+    schema: main
+    description: "Dados processados pelo Spark na camada Silver"
+    tables:
+      # Tabela 1: Itens
+      - name: order_items
+        description: "Itens de pedidos"
+        meta:
+          external_location: "/app/09_lakehouse/silver/order_items/*.parquet"

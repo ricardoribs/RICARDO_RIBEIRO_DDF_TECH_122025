@@ -1,0 +1,13 @@
+olist_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # Isso cria um banco de dados local arquivo único
+      path: 'olist_local.duckdb'
+      # Configurações para ler Parquet sem frescura
+      extensions:
+        - parquet
+      settings:
+        # Aumenta memória para processar dados pesados
+        memory_limit: '4GB'

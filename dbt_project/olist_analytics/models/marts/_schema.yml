@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: fct_sales_daily
+    description: "Tabela agregada de vendas diárias (Incremental)."
+    columns:
+      - name: sales_date
+        description: "Data da venda (granularidade diária)"
+        tests:
+          - unique
+          - not_null
+
+      - name: total_revenue
+        description: "Receita bruta total do dia (soma dos preços)"
+        tests:
+          - not_null
+
+      - name: total_orders
+        description: "Quantidade distinta de pedidos no dia"
+        tests:
+          - not_null
+
+      - name: avg_ticket
+        description: "Ticket médio do dia (Receita / Pedidos)"
