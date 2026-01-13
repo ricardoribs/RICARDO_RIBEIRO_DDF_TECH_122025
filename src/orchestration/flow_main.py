@@ -132,7 +132,6 @@ def ingest_bronze():
 # =====================================================
 @task(name="2. Transform Silver (Clean)", retries=1)
 def process_silver():
-    logger = get_run_logger()
     spark = get_spark_session()
     start_time = time.time()
     
@@ -231,7 +230,6 @@ def enrich_products_ai():
     try:
         # Lógica simulada de batch
         genai.configure(api_key=settings.GOOGLE_API_KEY.get_secret_value())
-        model = genai.GenerativeModel('gemini-flash-latest')
         time.sleep(2) # Simula processamento
         
         monitor.log("AI Enrichment", 5, time.time() - start_time) # 5 itens simulados
