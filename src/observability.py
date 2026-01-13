@@ -1,7 +1,5 @@
 import logging
-import time
 from pythonjsonlogger import jsonlogger
-from prefect import get_run_logger
 from prefect.artifacts import create_markdown_artifact
 
 # --- 1. CONFIGURAÇÃO DE LOGS JSON ---

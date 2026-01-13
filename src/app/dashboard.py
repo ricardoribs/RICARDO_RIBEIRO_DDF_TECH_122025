@@ -1,7 +1,5 @@
 import streamlit as st
-import pandas as pd
 import duckdb
-import plotly.express as px
 from src.config import settings  # <--- Importa a configuração segura
 
 # Configuração da Página
