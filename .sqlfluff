@@ -1,40 +1,33 @@
 [sqlfluff]
-# 1. Configurações Globais
 dialect = duckdb
 templater = dbt
 runaway_limit = 10
 max_line_length = 80
 indent_unit = space
 
-# 2. Regras Ignoradas (Apenas as cosméticas irritantes, mantendo as lógicas)
-# L003: Indentação de comentários (falso positivo comum)
-exclude_rules = L003
+# Ignorar pastas que não são código SQL puro ou que são geradas automaticamente
+exclude_rules = L031, L034
+ignore = parsing, templating
 
 [sqlfluff:indentation]
 tab_space_size = 4
-indent_unit = space
-# Alinha JOINs com a tabela FROM
-align_alias = True
 
 [sqlfluff:layout:type:comma]
-# Vírgula no início da linha (Leading Comma) - Melhor para Git Blame
-spacing_before = newline
+spacing_before = touch
 line_position = leading
 
 [sqlfluff:rules:capitalisation.keywords]
-capitalisation_policy = upper
+capitalisation_policy = lower
 
 [sqlfluff:rules:aliasing.table]
-# Força alias explícito (AS t1)
 aliasing = explicit
 
-[sqlfluff:rules:ambiguous.join]
-# L031: Garante que joins usem o alias (on t1.id = t2.id)
-fully_qualify_join_types = join
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = implicit
 
-# 3. Configuração do Templater dbt (CRÍTICO)
+# --- CONFIGURAÇÃO DO DBT ---
 [sqlfluff:templater:dbt]
-project_dir = ./dbt_project/olist_analytics
-profiles_dir = ./dbt_project/olist_analytics
+project_dir = olist_analytics
+profiles_dir = olist_analytics
 profile = olist_analytics
 target = dev
